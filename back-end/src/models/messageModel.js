@@ -11,11 +11,6 @@ const messageSchema = mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Chat",
 		},
-		receiver: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
-		},
-		createAt: { type: Date, default: Date.now },
 	},
 
 	{ timestamps: true }

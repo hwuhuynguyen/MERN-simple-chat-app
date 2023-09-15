@@ -6,7 +6,7 @@ const {
 	removeFromGroup,
 	addToGroup,
 	renameGroup,
-} = require("../controllers/chat.controller");
+} = require("../controllers/chatController");
 
 const { protect } = require("../middlewares/authMiddleware");
 
