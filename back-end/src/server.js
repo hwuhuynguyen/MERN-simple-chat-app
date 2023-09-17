@@ -2,16 +2,18 @@
 const cors = require("cors");
 const dotenv = require("dotenv");
 const express = require("express");
+const { createServer } = require("http");
 
 // import functions and files
-const connectDB = require("./config/database.config");
+const connectDB = require("./config/databaseConfig");
 
-const authRoutes = require("./routes/auth.routes");
-const chatRoutes = require("./routes/chat.routes");
-const messageRoutes = require("./routes/message.routes");
-const userRoutes = require("./routes/user.routes");
+const authRoutes = require("./routes/authRoutes");
+const chatRoutes = require("./routes/chatRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const globalErrorHandler = require("./middlewares/errorHandler");
+const { Server } = require("socket.io");
 
 // declare variables and constants
 const PORT = process.env.PORT || 5000;
@@ -48,6 +50,40 @@ app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-app.listen(PORT, console.log(`Server is listening on ${PORT}`.yellow.bold));
+// app.listen(PORT, console.log(`Server is listening on ${PORT}`.yellow.bold));
 
 app.use(globalErrorHandler);
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+	cors: {
+		origin: "*",
+		credentials: true,
+	},
+});
+
+httpServer.listen(PORT, () => {
+	console.log(`Server is listening on ${PORT}`.yellow.bold);
+});
+
+io.on("connection", (socket) => {
+	console.log("Connected to socket.io");
+
+	socket.on("setup", (userData) => {
+		console.log(userData);
+		socket.join(userData._id);
+		socket.emit("connected");
+	});
+
+	socket.on("JOIN_ROOM", (chatId) => {
+		console.log("User joined chat: ", chatId);
+		socket.join(chatId);
+	});
+
+	socket.on("NEW_MESSAGE", (message) => {
+		console.log("New message: ", message);
+
+		socket.to(message.chat._id).emit("RECEIVE_MESSAGE", message);
+	});
+});
