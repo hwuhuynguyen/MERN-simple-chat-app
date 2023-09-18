@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideDrawer from "../components/shared/SideDrawer";
 import { Box } from "@chakra-ui/react";
 import MyChats from "../components/chat/MyChats";
@@ -10,6 +10,7 @@ function ChatPage() {
 	const navigate = useNavigate();
 	const authCtx = useContext(AuthContext);
 	const user = authCtx.user;
+	const [fetchAgain, setFetchAgain] = useState(false);
 
 	useEffect(() => {
 		if (!user) navigate("/");
@@ -26,8 +27,12 @@ function ChatPage() {
 				m="1vh 1vw"
 				flexDirection={"row"}
 			>
-				{user && <MyChats />}
-				{user && <Chatbox />}
+				{user && (
+					<MyChats fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+				)}
+				{user && (
+					<Chatbox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+				)}
 			</Box>
 		</div>
 	);
