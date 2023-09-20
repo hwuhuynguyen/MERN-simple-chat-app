@@ -1,4 +1,4 @@
-import { Box, Button, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { getSenderName } from "../../utils/ChatHelper";
 import { ChatContext } from "../../context/chatContext";
 import { AddIcon } from "@chakra-ui/icons";
 import NewChatModal from "../modal/NewChatModal";
+import ChatLoading from "../shared/ChatLoading";
 
 function MyChats({ fetchAgain, setFetchAgain }) {
 	const { selectedChat, setSelectedChat, chats, setChats } =
@@ -36,6 +37,7 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 		setLoading(false);
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	const retriveChat = async () => {
 		if (!selectedChat) return;
 
@@ -57,10 +59,10 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 
 	useEffect(() => {
 		fetchAllChats();
-		retriveChat();
+		// retriveChat();
 		setLoggedUser(user);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetchAgain]);
+	}, []);
 
 	return (
 		<Box
@@ -102,20 +104,7 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 			>
 				{" "}
 				{loading ? (
-					<Stack overflowY="scroll">
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-						<Skeleton height="60px" />
-					</Stack>
+					<ChatLoading />
 				) : (
 					<Stack overflowY="scroll">
 						{chats &&
