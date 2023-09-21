@@ -6,7 +6,7 @@ export const ChatContext = createContext(INITIAL_STATE);
 
 export const ChatContextProvider = (props) => {
 	const [selectedChat, setSelectedChat] = useState();
-	const [chats, setChats] = useState();
+	const [chats, setChats] = useState([]);
 
 	const chatContext = {
 		selectedChat,

@@ -11,7 +11,7 @@ root.render(
 	// <React.StrictMode>
 	<AuthContextProvider>
 		<ChatContextProvider>
-			<ChakraProvider>
+			<ChakraProvider portalZIndex={1500}>
 				<App />
 			</ChakraProvider>
 		</ChatContextProvider>
