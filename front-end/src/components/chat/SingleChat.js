@@ -26,7 +26,8 @@ import UpdateChatModal from "../modal/UpdateChatModal";
 var socket, selectedChatCompare;
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
-	const { selectedChat } = useContext(ChatContext);
+	const { selectedChat, notifications, setNotifications } =
+		useContext(ChatContext);
 	const authCtx = useContext(AuthContext);
 	const user = authCtx.user;
 
@@ -37,6 +38,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	useEffect(() => {
 		socket = io(ROOT_URL);
 		socket.emit("setup", user);
+		console.log("Setup socket");
+		console.log(selectedChatCompare);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -66,12 +69,12 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 				const message = {
 					chat: selectedChat,
 					content: newMessage,
-					createdAt: new Date(),
+					createdAt: new Date().toISOString(),
 					sender: user,
 					_id: Date.now() + "",
 				};
 				socket.emit(NEW_MESSAGE, message);
-				setFetchAgain(!fetchAgain);
+				// setFetchAgain(!fetchAgain);
 				setMessages([...messages, message]);
 
 				// in the comment code, we need to wait for the reponse from the server before emitting the new message
@@ -109,14 +112,18 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedChat]);
 
+	console.log(notifications);
 	useEffect(() => {
+		console.log("use effecting");
 		socket.on(RECEIVE_MESSAGE, (newMessageReceived) => {
 			if (
 				!selectedChatCompare ||
 				newMessageReceived.chat._id !== selectedChatCompare._id
 			) {
-				console.log("SET FETCHING");
-				setFetchAgain(!fetchAgain);
+				if (!notifications.includes(newMessageReceived)) {
+					setNotifications([newMessageReceived, ...notifications]);
+					setFetchAgain(!fetchAgain);
+				}
 			} else {
 				setMessages([...messages, newMessageReceived]);
 			}

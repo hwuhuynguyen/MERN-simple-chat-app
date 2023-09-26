@@ -10,8 +10,14 @@ import NewChatModal from "../modal/NewChatModal";
 import ChatLoading from "../shared/ChatLoading";
 
 function MyChats({ fetchAgain, setFetchAgain }) {
-	const { selectedChat, setSelectedChat, chats, setChats } =
-		useContext(ChatContext);
+	const {
+		selectedChat,
+		setSelectedChat,
+		chats,
+		setChats,
+		notifications,
+		setNotifications,
+	} = useContext(ChatContext);
 	const [loggedUser, setLoggedUser] = useState();
 	const [loading, setLoading] = useState(false);
 
@@ -117,7 +123,12 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 									px={3}
 									py={2}
 									borderRadius="lg"
-									onClick={() => setSelectedChat(chat)}
+									onClick={() => {
+										setSelectedChat(chat);
+										setNotifications(
+											notifications.filter((n) => n.chat._id !== chat._id)
+										);
+									}}
 								>
 									<Text>
 										{chat.isGroupChat

@@ -36,7 +36,7 @@ function ScrollableChat({ messages }) {
 									/>
 								</Tooltip>
 							)}
-						<Tooltip label={m?.createdAt} placement="auto">
+						<Tooltip label={m?.createdAt?.toString()} placement="auto">
 							<span
 								style={{
 									backgroundColor: `${

@@ -16,7 +16,6 @@ function UserBadgeItem({ user, onHandleClick, color }) {
 			cursor="pointer"
 		>
 			{user.name}
-			{/* {admin === user._id && <span> (Admin)</span>} */}
 			<CloseIcon onClick={onHandleClick} ml={"10px"} pb={"2px"} />
 		</Badge>
 	);

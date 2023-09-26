@@ -21,13 +21,7 @@ function UserListItem({ user, onHandleClick }) {
 				mb={2}
 				borderRadius="lg"
 			>
-				<Avatar
-					mr={2}
-					size="sm"
-					cursor="pointer"
-					name={user.name}
-					src={user.pic}
-				/>
+				<Avatar mr={2} size="sm" cursor="pointer" name={user.name} src={""} />
 				<Box>
 					<Text>{user.name}</Text>
 					<Text fontSize="xs">
