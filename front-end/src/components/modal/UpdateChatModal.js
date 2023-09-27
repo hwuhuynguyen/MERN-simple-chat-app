@@ -28,6 +28,7 @@ import { ChatContext } from "../../context/chatContext";
 function UpdateChatModal({
 	children,
 	selectedChat,
+	currentUser,
 	fetchAgain,
 	setFetchAgain,
 }) {
@@ -370,7 +371,7 @@ function UpdateChatModal({
 							</>
 						) : (
 							<>
-								<UserProfileModal user={user} />
+								<UserProfileModal user={currentUser} />
 							</>
 						)}
 					</ModalBody>
