@@ -73,6 +73,17 @@ function Login() {
 
 			console.log(res.data.data.user);
 
+			if (res.data.data.user.isAdmin) {
+				setLoading(false);
+				return Swal.fire({
+					title: "Login failed!",
+					text: "You are not able to perform this action",
+					icon: "error",
+					timer: 1500,
+					confirmButtonColor: "#3182ce",
+				});
+			}
+
 			authCtx.dispatch({ type: LOGIN_SUCCESS, payload: res.data.data.user });
 
 			localStorage.setItem("jwt", res.data.token);
@@ -88,10 +99,11 @@ function Login() {
 			navigate("/chats");
 		} catch (err) {
 			authCtx.dispatch({ type: LOGIN_FAILURE });
-			console.log(err.message);
+			console.log(err);
 			Swal.fire({
 				title: "Login failed!",
-				text: "Incorrect username or password!",
+				text: `${err.response.data.message}`,
+				// text: "Incorrect username or password!",
 				icon: "error",
 				timer: 1500,
 				confirmButtonColor: "#3182ce",

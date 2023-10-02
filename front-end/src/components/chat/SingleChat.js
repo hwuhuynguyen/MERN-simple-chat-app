@@ -10,18 +10,21 @@ import {
 	Tooltip,
 } from "@chakra-ui/react";
 import { AuthContext } from "../../context/authContext";
-import { getSenderName } from "../../utils/ChatHelper";
+import { getSender, getSenderName } from "../../utils/ChatHelper";
 import axios from "axios";
 import {
 	JOIN_ROOM,
 	NEW_MESSAGE,
+	RECEIVE_IMAGE,
 	RECEIVE_MESSAGE,
 	ROOT_URL,
+	SEND_IMAGE,
 } from "../../constants";
 import ScrollableChat from "./ScrollableChat";
 import { io } from "socket.io-client";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import UpdateChatModal from "../modal/UpdateChatModal";
+import { v4 as uuidv4 } from "uuid";
 
 var socket, selectedChatCompare;
 
@@ -34,6 +37,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [file, setFile] = useState();
 
 	useEffect(() => {
 		socket = io(ROOT_URL);
@@ -61,10 +65,68 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 		socket.emit(JOIN_ROOM, selectedChat._id);
 	};
 
+	const sendFile = () => {
+		const reader = new FileReader();
+
+		const uniqueFilename = uuidv4();
+
+		reader.onload = async () => {
+			const filePath = `uploads/images/chat/${uniqueFilename}`;
+			const base64String = reader.result;
+
+			const extension = base64String.substring(
+				base64String.indexOf("/") + 1,
+				base64String.indexOf(";")
+			);
+			const message = {
+				chat: selectedChat,
+				type: "file",
+				mimeType: file.type,
+				fileName: uniqueFilename,
+				createdAt: new Date().toISOString(),
+				sender: user,
+				_id: Date.now() + "",
+				content: `/${filePath}.${extension}`,
+			};
+
+			setMessages([...messages, message]);
+
+			socket.emit(SEND_IMAGE, { message, image: reader.result });
+			const jwt = localStorage.getItem("jwt");
+			await axios.post(
+				`${ROOT_URL}/api/messages`,
+				{
+					content: `/${filePath}.${extension}`,
+					type: "file",
+					mimeType: file.type,
+					fileName: uniqueFilename,
+					chatId: selectedChat._id,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				}
+			);
+		};
+
+		setNewMessage("");
+		setFile();
+		reader.readAsDataURL(file);
+	};
+
 	const sendMessage = async (event) => {
-		if ((event.key === "Enter" || event.type === "click") && newMessage) {
-			console.log("SEND MESSAGE", event);
+		if (
+			(event.key === "Enter" || event.type === "click") &&
+			newMessage &&
+			newMessage.trim().length > 0
+		) {
 			try {
+				if (file) {
+					sendFile();
+					return;
+				}
+
 				// optimize performance when emitting messages and sending requests to server at the same time
 				const message = {
 					chat: selectedChat,
@@ -73,13 +135,41 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 					sender: user,
 					_id: Date.now() + "",
 				};
+
 				socket.emit(NEW_MESSAGE, message);
 				// setFetchAgain(!fetchAgain);
 				setMessages([...messages, message]);
+				console.log(selectedChat);
 
-				// in the comment code, we need to wait for the reponse from the server before emitting the new message
+				// ----------------------------------------------------------------
+				// SEND NOTIFICATION
 				const jwt = localStorage.getItem("jwt");
+				selectedChat.users.forEach(async (chatUser) => {
+					const content = selectedChat.isGroupChat
+						? `New message in '${selectedChat.chatName}' group`
+						: `New message from ${user.name}`;
+					if (user._id === chatUser._id) return;
+					await axios.post(
+						`${ROOT_URL}/api/notifications`,
+						{
+							sender: user._id,
+							receiver: chatUser._id,
+							type: "message",
+							content,
+							chat: selectedChat,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${jwt}`,
+							},
+						}
+					);
+				});
+
+				// ----------------------------------------------------------------
+				// in the comment code, we need to wait for the reponse from the server before emitting the new message
 				setNewMessage("");
+
 				await axios.post(
 					`${ROOT_URL}/api/messages`,
 					{
@@ -92,6 +182,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 						},
 					}
 				);
+
 				// socket.emit(NEW_MESSAGE, data);
 				// setFetchAgain(!fetchAgain);
 				// setMessages([...messages, data]);
@@ -106,15 +197,18 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 		setNewMessage(event.target.value);
 	};
 
+	const selectFile = (e) => {
+		setNewMessage(e.target.files[0]?.name);
+		setFile(e.target.files[0]);
+	};
+
 	useEffect(() => {
 		fetchAllMessages();
 		selectedChatCompare = selectedChat;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedChat]);
 
-	console.log(notifications);
 	useEffect(() => {
-		console.log("use effecting");
 		socket.on(RECEIVE_MESSAGE, (newMessageReceived) => {
 			if (
 				!selectedChatCompare ||
@@ -126,6 +220,25 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 				}
 			} else {
 				setMessages([...messages, newMessageReceived]);
+			}
+		});
+
+		socket.on(RECEIVE_IMAGE, (data) => {
+			const receivedImage = new Image();
+			receivedImage.src = data.message.content;
+			const message = data.message;
+			message.content = data.message.content;
+
+			if (
+				!selectedChatCompare ||
+				data.message.chat._id !== selectedChatCompare._id
+			) {
+				if (!notifications.includes(data.message)) {
+					setNotifications([data.message, ...notifications]);
+					setFetchAgain(!fetchAgain);
+				}
+			} else {
+				setMessages([...messages, message]);
 			}
 		});
 	});
@@ -150,6 +263,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 							<>{selectedChat.chatName.toUpperCase()}</>
 						)}
 						<UpdateChatModal
+							currentUser={getSender(user, selectedChat.users)}
 							selectedChat={selectedChat}
 							fetchAgain={fetchAgain}
 							setFetchAgain={setFetchAgain}
@@ -202,8 +316,24 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 								value={newMessage}
 								onChange={handleTypeMessage}
 							/>
+							<Input
+								display="none"
+								type="file"
+								id="file-selected"
+								onChange={selectFile}
+							/>
+							<Tooltip label="Attach file">
+								<Button>
+									<label htmlFor="file-selected">
+										<i
+											className="fa-solid fa-paperclip"
+											style={{ cursor: "pointer" }}
+										></i>
+									</label>
+								</Button>
+							</Tooltip>
 							<Tooltip label="Send message">
-								<Button bg={"rgb(190, 227, 248)"}>
+								<Button bg={"rgb(190, 227, 248)"} onClick={sendMessage}>
 									<i className="fas fa-paper-plane"></i>
 								</Button>
 							</Tooltip>

@@ -11,3 +11,5 @@ export const UPDATE_USER = "UPDATE_USER";
 export const JOIN_ROOM = "JOIN_ROOM";
 export const NEW_MESSAGE = "NEW_MESSAGE";
 export const RECEIVE_MESSAGE = "RECEIVE_MESSAGE";
+export const SEND_IMAGE = "SEND_IMAGE";
+export const RECEIVE_IMAGE = "RECEIVE_IMAGE";

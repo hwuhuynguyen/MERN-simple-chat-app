@@ -12,14 +12,59 @@ import {
 	MenuDivider,
 	MenuGroup,
 } from "@chakra-ui/react";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChatContext } from "../../context/chatContext";
 import { getSenderName } from "../../utils/ChatHelper";
+import axios from "axios";
+import { ROOT_URL } from "../../constants";
 
 function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 	const { setSelectedChat, notifications, setNotifications } =
 		useContext(ChatContext);
+
+	const retrieveNotifications = async () => {
+		try {
+			const jwt = localStorage.getItem("jwt");
+			const config = {
+				headers: {
+					Authorization: "Bearer " + jwt,
+				},
+			};
+
+			const { data } = await axios.get(`${ROOT_URL}/api/notifications`, config);
+			console.log(data.notifications);
+			setNotifications(data.notifications);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const readNotifications = async () => {
+		try {
+			const jwt = localStorage.getItem("jwt");
+			const config = {
+				headers: {
+					Authorization: "Bearer " + jwt,
+				},
+			};
+
+			const { data } = await axios.patch(
+				`${ROOT_URL}/api/notifications`,
+				{},
+				config
+			);
+			console.log(data.notifications);
+			setNotifications(data.notifications);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	useEffect(() => {
+		retrieveNotifications();
+	}, []);
+
 	return (
 		<Box
 			m={"1vh 1vw"}
@@ -78,15 +123,17 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 							<MenuItem
 								key={notif._id}
 								onClick={() => {
+									readNotifications();
 									setSelectedChat(notif.chat);
 									setNotifications(
-										notifications.filter((n) => n.chat._id !== notif.chat._id)
+										notifications.filter((n) => n._id !== notif._id)
 									);
 								}}
 							>
-								{notif.chat.isGroupChat
+								{notif.content}
+								{/* {notif.chat.isGroupChat
 									? `New message in ${notif.chat.chatName}`
-									: `New message from ${getSenderName(user, notif.chat.users)}`}
+									: `New message from ${getSenderName(user, notif.chat.users)}`} */}
 							</MenuItem>
 						))}
 					</MenuList>

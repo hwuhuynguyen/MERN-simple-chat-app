@@ -8,6 +8,7 @@ import {
 	setMarginLeftForMessageSent,
 	setMarginTopForMessageSentAndAvatar,
 } from "../../utils/ChatHelper";
+import { ROOT_URL } from "../../constants";
 
 function ScrollableChat({ messages }) {
 	const authCtx = useContext(AuthContext);
@@ -33,40 +34,80 @@ function ScrollableChat({ messages }) {
 										cursor="pointer"
 										name={m.sender.name}
 										src={""}
+										alignSelf={"end"}
 									/>
 								</Tooltip>
 							)}
-						<Tooltip label={m?.createdAt?.toString()} placement="auto">
-							<span
-								style={{
-									backgroundColor: `${
-										m.sender?._id === user?._id ? "#BEE3F8" : "#B9F5D0"
-									}`,
-									borderRadius: "20px",
-									// marginTop: `${m.sender?._id === user?._id ? "3px" : "5px"}`,
-									marginTop: setMarginTopForMessageSentAndAvatar(
-										messages,
-										m,
-										i,
-										user._id
-									),
-									// marginLeft: `${m.sender?._id === user?._id ? "auto" : "0"}`,
-									marginLeft: setMarginLeftForMessageSent(
-										messages,
-										m,
-										i,
-										user._id
-									),
-									marginRight: `${
-										m.sender?._id === user?._id ? "5px" : undefined
-									}`,
-									padding: "5px 15px",
-									maxWidth: "75%",
-								}}
-							>
-								{m.content}
-							</span>
-						</Tooltip>
+						{m.type === "file" ? (
+							<>
+								<span
+									style={{
+										backgroundColor: `${
+											m.sender?._id === user?._id ? "#BEE3F8" : "#B9F5D0"
+										}`,
+										borderRadius: "20px",
+										// marginTop: `${m.sender?._id === user?._id ? "3px" : "5px"}`,
+										marginTop: setMarginTopForMessageSentAndAvatar(
+											messages,
+											m,
+											i,
+											user._id
+										),
+										// marginLeft: `${m.sender?._id === user?._id ? "auto" : "0"}`,
+										marginLeft: setMarginLeftForMessageSent(
+											messages,
+											m,
+											i,
+											user._id
+										),
+										marginRight: `${
+											m.sender?._id === user?._id ? "5px" : undefined
+										}`,
+										padding: "5px 15px",
+										maxWidth: "75%",
+									}}
+								>
+									<img
+										src={ROOT_URL + m.content}
+										alt=""
+										width={"300px"}
+										height={"auto"}
+									/>
+								</span>
+							</>
+						) : (
+							<Tooltip label={m?.createdAt?.toString()} placement="auto">
+								<span
+									style={{
+										backgroundColor: `${
+											m.sender?._id === user?._id ? "#BEE3F8" : "#B9F5D0"
+										}`,
+										borderRadius: "20px",
+										// marginTop: `${m.sender?._id === user?._id ? "3px" : "5px"}`,
+										marginTop: setMarginTopForMessageSentAndAvatar(
+											messages,
+											m,
+											i,
+											user._id
+										),
+										// marginLeft: `${m.sender?._id === user?._id ? "auto" : "0"}`,
+										marginLeft: setMarginLeftForMessageSent(
+											messages,
+											m,
+											i,
+											user._id
+										),
+										marginRight: `${
+											m.sender?._id === user?._id ? "5px" : undefined
+										}`,
+										padding: "5px 15px",
+										maxWidth: "75%",
+									}}
+								>
+									{m.content}
+								</span>
+							</Tooltip>
+						)}
 					</div>
 				))}
 		</ScrollableFeed>
