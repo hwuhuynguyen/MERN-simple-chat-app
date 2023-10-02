@@ -19,7 +19,7 @@ const userSchema = mongoose.Schema(
 		password: {
 			type: "String",
 			required: [true, "Please provide a password"],
-			minlength: 6,
+			minlength: [6, "Password must be at least 6 characters long"],
 			select: false,
 		},
 		passwordConfirm: {
@@ -33,11 +33,21 @@ const userSchema = mongoose.Schema(
 				message: "Password are not the same",
 			},
 		},
+		// phoneNumber: {
+		// 	type: "String",
+		// 	validate: {
+		// 		validator: function (phone) {
+		// 			var regex = "/^$|^d{10}$/";
+		// 			return !phone || !phone.trim().length || regex.test(phone);
+		// 		},
+		// 		message: "Please provide a valid phone number.",
+		// 	},
+		// },
 		phoneNumber: {
 			type: "String",
 			validate: {
 				validator: function (phone) {
-					var regex = "/^$|^d{10}$/";
+					var regex = /^$|^\d{10}$/;
 					return !phone || !phone.trim().length || regex.test(phone);
 				},
 				message: "Please provide a valid phone number.",

@@ -12,8 +12,9 @@ const {
 	updateCurrentUserDetail,
 	getAllNewUsersRegistedToday,
 	getUserDetailById,
+	updateUserDetail,
 } = require("../controllers/userController");
-const { protect } = require("../middlewares/authMiddleware");
+const { protect, isAdmin } = require("../middlewares/authMiddleware");
 const {
 	isAvailableToSendFriendRequest,
 	isAvailableToAcceptFriendRequest,
@@ -33,6 +34,8 @@ router
 	.route("/me")
 	.get(protect, getCurrentUserDetail)
 	.patch(protect, updateCurrentUserDetail);
+
+router.route("/updateUserProfile").patch(protect, isAdmin, updateUserDetail);
 
 router.route("/friends").get(protect, getAllFriends);
 

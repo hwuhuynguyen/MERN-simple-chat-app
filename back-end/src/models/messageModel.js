@@ -7,6 +7,9 @@ const messageSchema = mongoose.Schema(
 			ref: "User",
 		},
 		content: { type: String, trim: true },
+		type: { type: String },
+		mimeType: { type: String },
+		fileName: { type: String },
 		chat: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Chat",

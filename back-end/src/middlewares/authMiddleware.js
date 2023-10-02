@@ -51,4 +51,24 @@ const restrictTo =
 		next();
 	};
 
-module.exports = { protect, restrictTo };
+const isAdmin = (req, res, next) => {
+	if (!req.user.isAdmin) {
+		return next(
+			new AppError("You do not have permission to perform this action"),
+			403
+		);
+	}
+	next();
+};
+
+const isNotAdmin = (req, res, next) => {
+	if (req.user.isAdmin) {
+		return next(
+			new AppError("You do not have permission to perform this action"),
+			403
+		);
+	}
+	next();
+};
+
+module.exports = { protect, restrictTo, isAdmin, isNotAdmin };
