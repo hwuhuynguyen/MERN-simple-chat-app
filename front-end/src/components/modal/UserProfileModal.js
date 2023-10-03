@@ -14,15 +14,15 @@ function UserProfileModal({ user }) {
 			/>
 
 			<Text fontSize={"20px"} p={"10px 0"}>
-				<span style={{ "margin-right": "100px" }}>Name: </span>
+				<span style={{ marginRight: "100px" }}>Name: </span>
 				{user.name}
 			</Text>
 			<Text fontSize={"20px"} p={"10px 0"}>
-				<span style={{ "margin-right": "100px" }}>Email: </span>
+				<span style={{ marginRight: "100px" }}>Email: </span>
 				{user.email}
 			</Text>
 			<Text fontSize={"20px"} p={"10px 0"}>
-				<span style={{ "margin-right": "25px" }}>Phone number:</span>
+				<span style={{ marginRight: "25px" }}>Phone number:</span>
 				{user.phoneNumber || "..."}
 			</Text>
 		</Box>

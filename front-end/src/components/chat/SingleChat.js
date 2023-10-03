@@ -4,6 +4,7 @@ import {
 	Box,
 	Button,
 	FormControl,
+	IconButton,
 	Input,
 	Spinner,
 	Text,
@@ -22,14 +23,14 @@ import {
 } from "../../constants";
 import ScrollableChat from "./ScrollableChat";
 import { io } from "socket.io-client";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import UpdateChatModal from "../modal/UpdateChatModal";
 import { v4 as uuidv4 } from "uuid";
 
 var socket, selectedChatCompare;
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
-	const { selectedChat, notifications, setNotifications } =
+	const { selectedChat, setSelectedChat, notifications, setNotifications } =
 		useContext(ChatContext);
 	const authCtx = useContext(AuthContext);
 	const user = authCtx.user;
@@ -257,6 +258,11 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 						justifyContent={{ base: "space-between" }}
 						alignItems="center"
 					>
+						<IconButton
+							display={{ base: "flex", md: "none" }}
+							icon={<ArrowBackIcon />}
+							onClick={() => setSelectedChat("")}
+						/>
 						{!selectedChat.isGroupChat ? (
 							<>{getSenderName(user, selectedChat.users)}</>
 						) : (

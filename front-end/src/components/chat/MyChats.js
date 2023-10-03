@@ -63,16 +63,51 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 		setSelectedChat(data[0]);
 	};
 
+	const readNotifications = async (chatId) => {
+		try {
+			const jwt = localStorage.getItem("jwt");
+			const config = {
+				headers: {
+					Authorization: "Bearer " + jwt,
+				},
+			};
+
+			const { data } = await axios.patch(
+				`${ROOT_URL}/api/notifications`,
+				{
+					chatId,
+				},
+				config
+			);
+			console.log(data.notifications);
+			setNotifications(data.notifications);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const checkUnreadMessages = (chatId) => {
+		console.log("input: ", chatId);
+		for (const notification of notifications) {
+			if (notification.chat._id === chatId) {
+				console.log("succcess: ", notification.chat._id);
+				return true;
+			}
+		}
+		return false;
+	};
+
 	useEffect(() => {
 		fetchAllChats();
 		// retriveChat();
 		setLoggedUser(user);
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
 		<Box
-			display="flex"
+			display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
 			flexDir="column"
 			alignItems="center"
 			p={3}
@@ -108,7 +143,6 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 				borderRadius="lg"
 				overflowY="hidden"
 			>
-				{" "}
 				{loading ? (
 					<ChatLoading />
 				) : (
@@ -124,32 +158,49 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 									py={2}
 									borderRadius="lg"
 									onClick={() => {
+										readNotifications(chat._id);
 										setSelectedChat(chat);
-										setNotifications(
-											notifications.filter((n) => n.chat._id !== chat._id)
-										);
+										// setNotifications(
+										// 	notifications.filter((n) => n.chat._id !== chat._id)
+										// );
 									}}
+									display={"flex"}
 								>
-									<Text>
-										{chat.isGroupChat
-											? chat.chatName
-											: getSenderName(loggedUser, chat.users)}
-									</Text>
-									{chat.latestMessage ? (
-										<Text fontSize="xs">
-											<b>
-												{chat.latestMessage.sender.name === loggedUser?.name
-													? "You"
-													: chat.latestMessage.sender.name}{" "}
-												:{" "}
-											</b>
-											{chat.latestMessage.content.length > 50
-												? chat.latestMessage.content.substring(0, 51) + "..."
-												: chat.latestMessage.content}
+									<Box width={"98%"}>
+										<Text>
+											{chat.isGroupChat
+												? chat.chatName
+												: getSenderName(loggedUser, chat.users)}
 										</Text>
-									) : (
-										<Text fontSize="xs"></Text>
-									)}
+										{chat.latestMessage ? (
+											<Text fontSize="xs">
+												<b>
+													{chat.latestMessage.sender.name === loggedUser?.name
+														? "You"
+														: chat.latestMessage.sender.name}{" "}
+													:{" "}
+												</b>
+												{chat.latestMessage.content.length > 50
+													? chat.latestMessage.content.substring(0, 51) + "..."
+													: chat.latestMessage.content}
+											</Text>
+										) : (
+											<Text fontSize="xs"></Text>
+										)}
+									</Box>
+									<Box display={"flex"} alignItems={"center"}>
+										<div
+											style={{
+												display: checkUnreadMessages(chat._id)
+													? "block"
+													: "none",
+												width: "10px",
+												height: "10px",
+												backgroundColor: "#16A9CF",
+												borderRadius: "50%",
+											}}
+										></div>
+									</Box>
 								</Box>
 							))}
 					</Stack>

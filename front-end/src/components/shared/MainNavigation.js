@@ -15,7 +15,6 @@ import {
 import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChatContext } from "../../context/chatContext";
-import { getSenderName } from "../../utils/ChatHelper";
 import axios from "axios";
 import { ROOT_URL } from "../../constants";
 
@@ -40,7 +39,7 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 		}
 	};
 
-	const readNotifications = async () => {
+	const readNotifications = async (chatId) => {
 		try {
 			const jwt = localStorage.getItem("jwt");
 			const config = {
@@ -51,7 +50,9 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 
 			const { data } = await axios.patch(
 				`${ROOT_URL}/api/notifications`,
-				{},
+				{
+					chatId,
+				},
 				config
 			);
 			console.log(data.notifications);
@@ -63,6 +64,7 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 
 	useEffect(() => {
 		retrieveNotifications();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -81,11 +83,19 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 			<Tooltip label="Search users">
 				<Button onClick={onHandleOpen}>
 					<i className="fa-solid fa-magnifying-glass"></i>
-					<Text px={3}>Search users</Text>
+					<Text px={3} display={{ base: "none", md: "flex" }}>
+						Search users
+					</Text>
 				</Button>
 			</Tooltip>
 
-			<Text fontSize={"4xl"}>SIMPLE CHAT APPLICATION</Text>
+			<Text
+				fontSize={{ base: "xl", md: "3xl" }}
+				textAlign={"center"}
+				paddingLeft={"2px"}
+			>
+				SIMPLE CHAT APPLICATION
+			</Text>
 			<div className="d-flex align-items-center" style={{ display: "flex" }}>
 				<Menu>
 					{/* <Tooltip label="Chats" p={"10px"}>
@@ -123,11 +133,11 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 							<MenuItem
 								key={notif._id}
 								onClick={() => {
-									readNotifications();
+									readNotifications(notif.chat._id);
 									setSelectedChat(notif.chat);
-									setNotifications(
-										notifications.filter((n) => n._id !== notif._id)
-									);
+									// setNotifications(
+									// 	notifications.filter((n) => n._id !== notif._id)
+									// );
 								}}
 							>
 								{notif.content}
@@ -139,7 +149,12 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 					</MenuList>
 				</Menu>
 				<Menu>
-					<MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
+					<MenuButton
+						as={Button}
+						bg="white"
+						rightIcon={<ChevronDownIcon />}
+						paddingInline={{ base: "0", md: "16px" }}
+					>
 						<Avatar size="sm" cursor="pointer" name={user.name} src={""} />
 					</MenuButton>
 					<MenuList>

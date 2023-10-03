@@ -1,11 +1,14 @@
 import { Box } from "@chakra-ui/react";
-import React from "react";
+import React, { useContext } from "react";
 import SingleChat from "./SingleChat";
+import { ChatContext } from "../../context/chatContext";
 
 function Chatbox({ fetchAgain, setFetchAgain }) {
+	const { selectedChat } = useContext(ChatContext);
+
 	return (
 		<Box
-			display="flex"
+			display={{ base: selectedChat ? "flex" : "none", md: "flex" }}
 			alignItems="center"
 			flexDir="column"
 			p={3}
