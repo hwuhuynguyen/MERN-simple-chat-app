@@ -1,11 +1,4 @@
 const express = require("express");
-const {
-	accessChat,
-	fetchChats,
-	fetchChatById,
-	createGroupChat,
-	updateGroupChat,
-} = require("../controllers/chatController");
 
 const { protect, isNotAdmin } = require("../middlewares/authMiddleware");
 const {

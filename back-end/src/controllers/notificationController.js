@@ -40,7 +40,7 @@ const getAllUnreadNotifications = catchAsync(async (req, res) => {
 //@access          PROTECTED
 const readNotifications = catchAsync(async (req, res) => {
 	await Notification.updateMany(
-		{ receiver: req.user._id, isRead: false },
+		{ receiver: req.user._id, isRead: false, chat: req.body.chatId },
 		{ $set: { isRead: true } }
 	);
 	const notifications = await Notification.find({
