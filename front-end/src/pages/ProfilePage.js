@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
 import ProfileNavigation from "../components/profile/ProfileNavigation";
 import ProfileBox from "../components/profile/ProfileBox";
-import axios from "axios";
-import { ROOT_URL } from "../constants";
+import axios from "./../utils/AxiosInstance";
 
 function ProfilePage() {
 	const navigate = useNavigate();
@@ -21,17 +20,9 @@ function ProfilePage() {
 
 	const retriveUserInformation = async () => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const { data } = await axios.get(`${ROOT_URL}/api/users/me`, {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			});
-			console.log(data);
+			const { data } = await axios.get(`/users/me`);
 			setCurrentUser(data.user);
-		} catch (error) {
-			console.log(error);
-		}
+		} catch (error) {}
 	};
 
 	useEffect(() => {

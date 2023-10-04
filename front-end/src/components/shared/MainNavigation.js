@@ -15,8 +15,7 @@ import {
 import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChatContext } from "../../context/chatContext";
-import axios from "axios";
-import { ROOT_URL } from "../../constants";
+import axios from "./../../utils/AxiosInstance";
 
 function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 	const { setSelectedChat, notifications, setNotifications } =
@@ -24,14 +23,7 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 
 	const retrieveNotifications = async () => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(`${ROOT_URL}/api/notifications`, config);
+			const { data } = await axios.get(`/notifications`);
 			console.log(data.notifications);
 			setNotifications(data.notifications);
 		} catch (error) {
@@ -41,21 +33,10 @@ function MainNavigation({ user, onHandleOpen, onLogoutHandler }) {
 
 	const readNotifications = async (chatId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
+			const { data } = await axios.patch(`/notifications`, {
+				chatId,
+			});
 
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/notifications`,
-				{
-					chatId,
-				},
-				config
-			);
-			console.log(data.notifications);
 			setNotifications(data.notifications);
 		} catch (error) {
 			console.log(error);

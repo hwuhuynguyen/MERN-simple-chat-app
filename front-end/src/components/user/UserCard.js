@@ -9,10 +9,10 @@ import {
 	Stack,
 	Text,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "./../../utils/AxiosInstance";
 import React, { useContext } from "react";
 import Swal from "sweetalert2";
-import { ROOT_URL, UPDATE_USER } from "../../constants";
+import { UPDATE_USER } from "../../constants";
 import { AuthContext } from "../../context/authContext";
 
 function UserCard({ user, isRequestSent, isRequestReceived }) {
@@ -44,27 +44,14 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 
 	const handleCancelFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/cancelFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/cancelFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -89,33 +76,19 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 					container: "custom-swal-modal",
 				},
 			});
-			console.log(error);
 		}
 	};
 
 	const handleAcceptFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/acceptFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/acceptFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -129,34 +102,19 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 					container: "custom-swal-modal",
 				},
 			});
-		} catch (error) {
-			console.log(error);
-		}
+		} catch (error) {}
 	};
 
 	const handleDenyFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/denyFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/denyFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -170,9 +128,7 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 					container: "custom-swal-modal",
 				},
 			});
-		} catch (error) {
-			console.log(error);
-		}
+		} catch (error) {}
 	};
 
 	return (

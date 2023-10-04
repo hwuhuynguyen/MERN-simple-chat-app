@@ -71,8 +71,6 @@ function Login() {
 				password: formData.password,
 			});
 
-			console.log(res.data.data.user);
-
 			if (res.data.data.user.isAdmin) {
 				setLoading(false);
 				return Swal.fire({

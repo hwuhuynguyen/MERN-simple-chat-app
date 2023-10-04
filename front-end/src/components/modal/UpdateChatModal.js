@@ -18,8 +18,8 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import UserListItem from "../user/UserListItem";
 import { AuthContext } from "../../context/authContext";
-import axios from "axios";
-import { ROOT_URL } from "../../constants";
+import axios from "./../../utils/AxiosInstance";
+import {} from "../../constants";
 import UserBadgeItem from "../user/UserBadgeItem";
 import Swal from "sweetalert2";
 import UserProfileModal from "./UserProfileModal";
@@ -66,7 +66,6 @@ function UpdateChatModal({
 		setChatName(selectedChat.chatName);
 		setMembers(selectedChat.users);
 		setGroupAdmin(selectedChat.groupAdmin);
-		setSearchResult([]);
 		setSelectedAddedFriends([]);
 		setSelectedRemovedFriends([]);
 	}, [selectedChat]);
@@ -74,17 +73,9 @@ function UpdateChatModal({
 	const retriveChat = async () => {
 		if (!selectedChat) return;
 
-		const jwt = localStorage.getItem("jwt");
 		setLoading(true);
 
-		const { data } = await axios.get(
-			`${ROOT_URL}/api/chats/${selectedChat._id}`,
-			{
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			}
-		);
+		const { data } = await axios.get(`/chats/${selectedChat._id}`);
 		console.log(data[0]);
 		setLoading(false);
 		setSelectedChat(data[0]);
@@ -117,13 +108,9 @@ function UpdateChatModal({
 
 	const retriveFriends = async () => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const response = await axios.get(`${ROOT_URL}/api/users/friends`, {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			});
+			const response = await axios.get(`/users/friends`);
 			setFriends(response.data.users);
+			setSearchResult(response.data.users);
 		} catch (error) {
 			console.log(error);
 		}
@@ -143,7 +130,7 @@ function UpdateChatModal({
 
 	const handleSearchUsers = (keyword) => {
 		if (!keyword) {
-			setSearchResult([]);
+			setSearchResult(friends);
 			return;
 		}
 
@@ -209,21 +196,12 @@ function UpdateChatModal({
 		console.log(selectedRemovedFriends);
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			await axios.patch(
-				`${ROOT_URL}/api/chats/updateGroupChat`,
-				{
-					chatId: selectedChat._id,
-					chatName,
-					addedMembers: selectedAddedFriends,
-					removedMembers: selectedRemovedFriends,
-				},
-				{
-					headers: {
-						Authorization: "Bearer " + jwt,
-					},
-				}
-			);
+			await axios.patch(`/chats/updateGroupChat`, {
+				chatId: selectedChat._id,
+				chatName,
+				addedMembers: selectedAddedFriends,
+				removedMembers: selectedRemovedFriends,
+			});
 			onClose();
 			// setFetchAgain(!fetchAgain);
 			retriveChat();

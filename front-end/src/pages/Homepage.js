@@ -24,14 +24,12 @@ function Homepage() {
 	const user = authCtx.user;
 
 	useEffect(() => {
-		console.log("User details: ", user);
 		if (user) {
 			navigate("/chats");
 		}
 	}, [user, navigate]);
 
 	const handleSignupSuccess = () => {
-		console.log("Signup success!");
 		tabsRef.current.childNodes[0].childNodes[0].click();
 	};
 

@@ -13,9 +13,8 @@ import {
 	Box,
 	FormHelperText,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "./../../utils/AxiosInstance";
 import React, { useContext, useEffect, useState } from "react";
-import { ROOT_URL } from "../../constants";
 import UserListItem from "../user/UserListItem";
 import Swal from "sweetalert2";
 import UserBadgeItem from "../user/UserBadgeItem";
@@ -38,14 +37,10 @@ function NewChatModal({ children, fetchAgain, setFetchAgain }) {
 
 	const retriveFriends = async () => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const response = await axios.get(`${ROOT_URL}/api/users/friends`, {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			});
-			console.log(response);
+			const response = await axios.get(`/users/friends`);
+
 			setFriends(response.data.users);
+			setSearchResult(response.data.users);
 		} catch (error) {
 			console.log(error);
 		}
@@ -69,7 +64,7 @@ function NewChatModal({ children, fetchAgain, setFetchAgain }) {
 
 	const handleSearchUsers = (keyword) => {
 		if (!keyword) {
-			setSearchResult([]);
+			setSearchResult(friends);
 			return;
 		}
 
@@ -93,24 +88,13 @@ function NewChatModal({ children, fetchAgain, setFetchAgain }) {
 		}
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const configHeader = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
 			if (selectedFriends.length > 1) {
-				const { data } = await axios.post(
-					`${ROOT_URL}/api/chats/createGroupChat`,
-					{
-						chatName,
-						isGroupChat: true,
-						users: selectedFriends,
-						groupAdmin: user,
-					},
-					configHeader
-				);
+				const { data } = await axios.post(`/chats/createGroupChat`, {
+					chatName,
+					isGroupChat: true,
+					users: selectedFriends,
+					groupAdmin: user,
+				});
 				setSelectedChat(data);
 				setFetchAgain(!fetchAgain);
 				Swal.fire({
@@ -124,13 +108,9 @@ function NewChatModal({ children, fetchAgain, setFetchAgain }) {
 					},
 				});
 			} else {
-				const { data } = await axios.post(
-					`${ROOT_URL}/api/chats`,
-					{
-						userId: selectedFriends[0]._id,
-					},
-					configHeader
-				);
+				const { data } = await axios.post(`/chats`, {
+					userId: selectedFriends[0]._id,
+				});
 				setSelectedChat(data);
 			}
 		} catch (err) {

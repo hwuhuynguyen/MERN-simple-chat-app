@@ -8,11 +8,12 @@ import {
 	Input,
 	Spinner,
 	Text,
+	Textarea,
 	Tooltip,
 } from "@chakra-ui/react";
 import { AuthContext } from "../../context/authContext";
 import { getSender, getSenderName } from "../../utils/ChatHelper";
-import axios from "axios";
+import axios from "./../../utils/AxiosInstance";
 import {
 	JOIN_ROOM,
 	NEW_MESSAGE,
@@ -51,16 +52,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	const fetchAllMessages = async () => {
 		if (!selectedChat) return;
 
-		const jwt = localStorage.getItem("jwt");
 		setLoading(true);
-		const { data } = await axios.get(
-			`${ROOT_URL}/api/messages/${selectedChat._id}`,
-			{
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			}
-		);
+		const { data } = await axios.get(`/messages/${selectedChat._id}`);
 		setLoading(false);
 		setMessages(data);
 		socket.emit(JOIN_ROOM, selectedChat._id);
@@ -93,22 +86,14 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 			setMessages([...messages, message]);
 
 			socket.emit(SEND_IMAGE, { message, image: reader.result });
-			const jwt = localStorage.getItem("jwt");
-			await axios.post(
-				`${ROOT_URL}/api/messages`,
-				{
-					content: `/${filePath}.${extension}`,
-					type: "file",
-					mimeType: file.type,
-					fileName: uniqueFilename,
-					chatId: selectedChat._id,
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				}
-			);
+
+			await axios.post(`/messages`, {
+				content: `/${filePath}.${extension}`,
+				type: "file",
+				mimeType: file.type,
+				fileName: uniqueFilename,
+				chatId: selectedChat._id,
+			});
 		};
 
 		setNewMessage("");
@@ -144,45 +129,29 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
 				// ----------------------------------------------------------------
 				// SEND NOTIFICATION
-				const jwt = localStorage.getItem("jwt");
+
 				selectedChat.users.forEach(async (chatUser) => {
 					const content = selectedChat.isGroupChat
 						? `New message in '${selectedChat.chatName}' group`
 						: `New message from ${user.name}`;
 					if (user._id === chatUser._id) return;
-					await axios.post(
-						`${ROOT_URL}/api/notifications`,
-						{
-							sender: user._id,
-							receiver: chatUser._id,
-							type: "message",
-							content,
-							chat: selectedChat,
-						},
-						{
-							headers: {
-								Authorization: `Bearer ${jwt}`,
-							},
-						}
-					);
+					await axios.post(`/notifications`, {
+						sender: user._id,
+						receiver: chatUser._id,
+						type: "message",
+						content,
+						chat: selectedChat,
+					});
 				});
 
 				// ----------------------------------------------------------------
 				// in the comment code, we need to wait for the reponse from the server before emitting the new message
 				setNewMessage("");
 
-				await axios.post(
-					`${ROOT_URL}/api/messages`,
-					{
-						content: newMessage,
-						chatId: selectedChat._id,
-					},
-					{
-						headers: {
-							Authorization: `Bearer ${jwt}`,
-						},
-					}
-				);
+				await axios.post(`/messages`, {
+					content: newMessage,
+					chatId: selectedChat._id,
+				});
 
 				// socket.emit(NEW_MESSAGE, data);
 				// setFetchAgain(!fetchAgain);
@@ -315,7 +284,10 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 							display={"flex"}
 							gap={"5px"}
 						>
-							<Input
+							<Textarea
+								h={"40px"}
+								minH={"40px"}
+								lineHeight={"initial"}
 								variant="filled"
 								bg="#E0E0E0"
 								placeholder="Enter a message.."

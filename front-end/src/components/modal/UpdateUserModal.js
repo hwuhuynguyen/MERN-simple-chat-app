@@ -13,8 +13,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import axios from "axios";
-import { ROOT_URL, UPDATE_USER } from "../../constants";
+import axios from "./../../utils/AxiosInstance";
+import { UPDATE_USER } from "../../constants";
 import Swal from "sweetalert2";
 
 function UpdateUserModal({ children }) {
@@ -31,20 +31,11 @@ function UpdateUserModal({ children }) {
 	const handleUpdateProfile = async (event) => {
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/me`,
-				{
-					name,
-					email,
-					phoneNumber,
-				},
-				{
-					headers: {
-						Authorization: "Bearer " + jwt,
-					},
-				}
-			);
+			const { data } = await axios.patch(`/users/me`, {
+				name,
+				email,
+				phoneNumber,
+			});
 			onClose();
 
 			authCtx.dispatch({

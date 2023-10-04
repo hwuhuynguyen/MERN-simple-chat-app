@@ -22,12 +22,12 @@ import {
 } from "@chakra-ui/react";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import { LOGOUT, ROOT_URL, UPDATE_USER } from "../../constants";
+import { LOGOUT, UPDATE_USER } from "../../constants";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { ChatContext } from "../../context/chatContext";
 import UserListItem from "../user/UserListItem";
-import axios from "axios";
+import axios from "./../../utils/AxiosInstance";
 import ChatLoading from "./ChatLoading";
 import MainNavigation from "./MainNavigation";
 
@@ -67,17 +67,7 @@ function SideDrawer({ user }) {
 	const handleSearch = async () => {
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(
-				`${ROOT_URL}/api/users?search=${search}`,
-				config
-			);
+			const { data } = await axios.get(`/users?search=${search}`);
 
 			setSearchResult(data.users);
 		} catch (error) {
@@ -89,18 +79,8 @@ function SideDrawer({ user }) {
 	const accessChat = async (userId) => {
 		try {
 			setLoadingChat(true);
-			const jwt = localStorage.getItem("jwt");
 
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-			const { data } = await axios.post(
-				`${ROOT_URL}/api/chats`,
-				{ userId },
-				config
-			);
+			const { data } = await axios.post(`/chats`, { userId });
 
 			navigate("/chats");
 			if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
@@ -114,17 +94,9 @@ function SideDrawer({ user }) {
 
 	const retriveFriends = async () => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(`${ROOT_URL}/api/users/friends`, config);
+			const { data } = await axios.get(`/users/friends`);
 
 			setFriends(data.users || []);
-			console.log(data.users);
 		} catch (error) {
 			console.log(error);
 		}
@@ -148,27 +120,14 @@ function SideDrawer({ user }) {
 
 	const handleSendFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/sendFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/sendFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -199,27 +158,14 @@ function SideDrawer({ user }) {
 
 	const handleCancelFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/cancelFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/cancelFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -250,27 +196,14 @@ function SideDrawer({ user }) {
 
 	const handleAcceptFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/acceptFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/acceptFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -291,27 +224,14 @@ function SideDrawer({ user }) {
 
 	const handleDenyFriendRequest = async (userId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/denyFriendRequest`,
-				{
-					userId,
-				},
-				config
-			);
+			const { data } = await axios.patch(`/users/denyFriendRequest`, {
+				userId,
+			});
 
 			authCtx.dispatch({
 				type: UPDATE_USER,
 				payload: data.user,
 			});
-
-			console.log(data.user);
 
 			localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -332,7 +252,6 @@ function SideDrawer({ user }) {
 
 	useEffect(() => {
 		retriveFriends();
-		console.log("retriveFriends");
 	}, [currentUser]);
 
 	useEffect(() => {

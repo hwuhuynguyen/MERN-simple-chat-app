@@ -50,7 +50,6 @@ function Signup({ onSignupSuccess }) {
 				passwordConfirm: formData.passwordConfirm,
 			});
 
-			console.log("Form submitted successfully");
 			Swal.fire({
 				title: "Success!",
 				text: "You registered new account! Please login to continue!",
@@ -66,7 +65,6 @@ function Signup({ onSignupSuccess }) {
 			});
 			navigate("/");
 		} catch (err) {
-			console.log(err);
 			const messages = err.response.data.messages;
 			Swal.fire({
 				title: "Error!",

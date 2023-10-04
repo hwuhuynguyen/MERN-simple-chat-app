@@ -1,8 +1,7 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import axios from "axios";
-import { ROOT_URL } from "../../constants";
+import axios from "./../../utils/AxiosInstance";
 import { getSenderName } from "../../utils/ChatHelper";
 import { ChatContext } from "../../context/chatContext";
 import { AddIcon } from "@chakra-ui/icons";
@@ -27,15 +26,9 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 	const fetchAllChats = async () => {
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const response = await axios.get(`${ROOT_URL}/api/chats`, {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			});
+			const response = await axios.get(`/chats`);
 			const chats = response.data;
 			setChats(chats);
-			console.log(chats);
 			console.log("Selected chat: ", selectedChat);
 		} catch (error) {
 			console.log(error);
@@ -47,39 +40,19 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 	const retriveChat = async () => {
 		if (!selectedChat) return;
 
-		const jwt = localStorage.getItem("jwt");
 		setLoading(true);
 
-		const { data } = await axios.get(
-			`${ROOT_URL}/api/chats/${selectedChat._id}`,
-			{
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			}
-		);
-		console.log(data[0]);
+		const { data } = await axios.get(`/chats/${selectedChat._id}`);
 		setLoading(false);
 		setSelectedChat(data[0]);
 	};
 
 	const readNotifications = async (chatId) => {
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
+			const { data } = await axios.patch(`/notifications`, {
+				chatId,
+			});
 
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/notifications`,
-				{
-					chatId,
-				},
-				config
-			);
-			console.log(data.notifications);
 			setNotifications(data.notifications);
 		} catch (error) {
 			console.log(error);
@@ -87,10 +60,8 @@ function MyChats({ fetchAgain, setFetchAgain }) {
 	};
 
 	const checkUnreadMessages = (chatId) => {
-		console.log("input: ", chatId);
 		for (const notification of notifications) {
 			if (notification.chat._id === chatId) {
-				console.log("succcess: ", notification.chat._id);
 				return true;
 			}
 		}

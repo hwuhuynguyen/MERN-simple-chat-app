@@ -28,7 +28,6 @@ export const AuthContextProvider = (props) => {
 			localStorage.setItem("user", JSON.stringify(res.data.data.user));
 		} catch (err) {
 			dispatch({ type: LOGIN_FAILURE });
-			console.log("error: ", err);
 		}
 	};
 
@@ -41,7 +40,6 @@ export const AuthContextProvider = (props) => {
 			localStorage.removeItem("user");
 		} catch (err) {
 			dispatch({ type: LOGIN_FAILURE });
-			console.log("error: ", err);
 		}
 	};
 
