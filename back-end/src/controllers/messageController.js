@@ -6,7 +6,7 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 //@description     Get all Messages
-//@route           GET /api/Message/:chatId
+//@route           GET /api/Messages/:chatId
 //@access          PROTECTED
 const allMessages = catchAsync(async (req, res) => {
 	try {
@@ -89,7 +89,6 @@ const sendMessage = catchAsync(async (req, res) => {
 	const { content, type, mimeType, fileName, chatId } = req.body;
 
 	if (!content || !chatId) {
-		console.log("Invalid data passed into request");
 		return res.status(400).json({
 			message: "Invalid data passed into request",
 		});

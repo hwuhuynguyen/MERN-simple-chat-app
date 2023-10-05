@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { protect, isAdmin } = require("../middlewares/authMiddleware");
+const { isAuthenticated, isAdmin } = require("../middlewares/authMiddleware");
 
 const {
 	sendMessage,
@@ -14,15 +14,17 @@ const router = express.Router();
 
 router
 	.route("/")
-	.get(protect, isAdmin, getAllMessagesForAdmin)
-	.post(protect, sendMessage);
-
-router.route("/detail/:messageId").get(protect, isAdmin, getMessageById);
+	.get(isAuthenticated, isAdmin, getAllMessagesForAdmin)
+	.post(isAuthenticated, sendMessage);
 
 router
-	.route("/newSentMessages")
-	.get(protect, isAdmin, getAllNewSentMessagesForAdmin);
+	.route("/detail/:messageId")
+	.get(isAuthenticated, isAdmin, getMessageById);
 
-router.route("/:chatId").get(protect, allMessages);
+router
+	.route("/new-sent-messages")
+	.get(isAuthenticated, isAdmin, getAllNewSentMessagesForAdmin);
+
+router.route("/:chatId").get(isAuthenticated, allMessages);
 
 module.exports = router;

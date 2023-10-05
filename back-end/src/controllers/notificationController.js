@@ -49,7 +49,6 @@ const readNotifications = catchAsync(async (req, res) => {
 	})
 		.populate("sender")
 		.populate("chat");
-	console.log(notifications);
 	res.status(200).json({ notifications });
 });
 

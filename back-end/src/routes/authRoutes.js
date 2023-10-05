@@ -8,9 +8,9 @@ const {
 	resetPassword,
 } = require("../controllers/authController");
 const {
-	protect,
+	isAuthenticated,
 	isAdmin,
-	isNotAdmin,
+	isUser,
 } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
@@ -21,8 +21,8 @@ router.route("/login").post(login);
 
 router.route("/logout").get(logout);
 
-router.route("/updatePassword").patch(protect, isNotAdmin, updatePassword);
+router.route("/update-password").patch(isAuthenticated, isUser, updatePassword);
 
-router.route("/resetPassword").patch(protect, isAdmin, resetPassword);
+router.route("/reset-password").patch(isAuthenticated, isAdmin, resetPassword);
 
 module.exports = router;

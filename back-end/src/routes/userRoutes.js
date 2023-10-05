@@ -14,7 +14,7 @@ const {
 	getUserDetailById,
 	updateUserDetail,
 } = require("../controllers/userController");
-const { protect, isAdmin } = require("../middlewares/authMiddleware");
+const { isAuthenticated, isAdmin } = require("../middlewares/authMiddleware");
 const {
 	isAvailableToSendFriendRequest,
 	isAvailableToAcceptFriendRequest,
@@ -24,37 +24,47 @@ const {
 
 const router = express.Router();
 
-router.route("/").get(protect, getAllUsers);
+router.route("/").get(isAuthenticated, getAllUsers);
 
-router.route("/profile/:userId").get(protect, getUserDetailById);
+router.route("/profile/:userId").get(isAuthenticated, getUserDetailById);
 
-router.route("/newRegisteredUsers").get(protect, getAllNewUsersRegistedToday);
+router
+	.route("/new-registered-users")
+	.get(isAuthenticated, getAllNewUsersRegistedToday);
 
 router
 	.route("/me")
-	.get(protect, getCurrentUserDetail)
-	.patch(protect, updateCurrentUserDetail);
-
-router.route("/updateUserProfile").patch(protect, isAdmin, updateUserDetail);
-
-router.route("/friends").get(protect, getAllFriends);
+	.get(isAuthenticated, getCurrentUserDetail)
+	.patch(isAuthenticated, updateCurrentUserDetail);
 
 router
-	.route("/sendFriendRequest")
-	.patch(protect, isAvailableToSendFriendRequest, sendFriendRequest);
+	.route("/update-user-profile")
+	.patch(isAuthenticated, isAdmin, updateUserDetail);
 
-router.route("/cancelFriendRequest").patch(protect, cancelFriendRequest);
-
-router
-	.route("/acceptFriendRequest")
-	.patch(protect, isAvailableToAcceptFriendRequest, acceptFriendRequest);
+router.route("/friends").get(isAuthenticated, getAllFriends);
 
 router
-	.route("/denyFriendRequest")
-	.patch(protect, isAvailableToDenyFriendRequest, denyFriendRequest);
+	.route("/send-friend-request")
+	.patch(isAuthenticated, isAvailableToSendFriendRequest, sendFriendRequest);
 
 router
-	.route("/removeFriend")
-	.patch(protect, isAvailableToRemoveFriend, removeFriend);
+	.route("/cancel-friend-request")
+	.patch(isAuthenticated, cancelFriendRequest);
+
+router
+	.route("/accept-friend-request")
+	.patch(
+		isAuthenticated,
+		isAvailableToAcceptFriendRequest,
+		acceptFriendRequest
+	);
+
+router
+	.route("/deny-friend-request")
+	.patch(isAuthenticated, isAvailableToDenyFriendRequest, denyFriendRequest);
+
+router
+	.route("/remove-friend")
+	.patch(isAuthenticated, isAvailableToRemoveFriend, removeFriend);
 
 module.exports = router;

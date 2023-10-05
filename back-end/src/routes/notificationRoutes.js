@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { protect, isNotAdmin } = require("../middlewares/authMiddleware");
+const { isAuthenticated, isUser } = require("../middlewares/authMiddleware");
 const {
 	getAllUnreadNotifications,
 	createNewNotification,
@@ -11,8 +11,8 @@ const router = express.Router();
 
 router
 	.route("/")
-	.get(protect, isNotAdmin, getAllUnreadNotifications)
-	.post(protect, isNotAdmin, createNewNotification)
-	.patch(protect, isNotAdmin, readNotifications);
+	.get(isAuthenticated, isUser, getAllUnreadNotifications)
+	.post(isAuthenticated, isUser, createNewNotification)
+	.patch(isAuthenticated, isUser, readNotifications);
 
 module.exports = router;

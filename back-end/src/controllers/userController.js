@@ -17,7 +17,6 @@ const getAllUsers = catchAsync(async (req, res) => {
 		: {};
 
 	const users = await User.find({ ...keyword, isAdmin: false });
-	// const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
 
 	res.status(200).json({
 		length: users.length,
@@ -25,14 +24,13 @@ const getAllUsers = catchAsync(async (req, res) => {
 	});
 });
 
-//@description     Search all users of a system (except Admin)
+//@description     Get user information by ID
 //@route           GET /api/users/profile/:userId
 //@access          PROTECTED
 const getUserDetailById = catchAsync(async (req, res) => {
 	const userId = req.params.userId;
 
 	const user = await User.find({ _id: { $eq: userId } });
-	// const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
 
 	res.status(200).json({
 		user,
@@ -133,7 +131,7 @@ const getAllFriends = catchAsync(async (req, res) => {
 });
 
 //@description		Send friend request to a user
-//@route					PATCH /api/users/sendFriendRequest
+//@route					PATCH /api/users/send-friend-request
 //@access					PROTECTED
 const sendFriendRequest = catchAsync(async (req, res) => {
 	const user = await User.findByIdAndUpdate(
@@ -152,7 +150,7 @@ const sendFriendRequest = catchAsync(async (req, res) => {
 });
 
 //@description		Send friend request to a user
-//@route					PATCH /api/users/cancelFriendRequest
+//@route					PATCH /api/users/cancel-friend-request
 //@access					PROTECTED
 const cancelFriendRequest = catchAsync(async (req, res) => {
 	const user = await User.findByIdAndUpdate(
@@ -171,7 +169,7 @@ const cancelFriendRequest = catchAsync(async (req, res) => {
 });
 
 //@description		Accept friend request of a user
-//@route					PATCH /api/users/acceptFriendRequest
+//@route					PATCH /api/users/accept-friend-request
 //@access					PROTECTED
 const acceptFriendRequest = catchAsync(async (req, res) => {
 	await User.findByIdAndUpdate(req.user._id, {
@@ -198,7 +196,7 @@ const acceptFriendRequest = catchAsync(async (req, res) => {
 });
 
 //@description		Deny friend request of a user
-//@route					PATCH /api/users/denyFriendRequest
+//@route					PATCH /api/users/deny-friend-request
 //@access					PROTECTED
 const denyFriendRequest = catchAsync(async (req, res) => {
 	const user = await User.findByIdAndUpdate(
@@ -218,7 +216,7 @@ const denyFriendRequest = catchAsync(async (req, res) => {
 });
 
 //@description		Remove friend
-//@route					PATCH /api/users/removeFriend
+//@route					PATCH /api/users/remove-friend
 //@access					PROTECTED
 const removeFriend = catchAsync(async (req, res) => {
 	await User.findByIdAndUpdate(req.user._id, {
