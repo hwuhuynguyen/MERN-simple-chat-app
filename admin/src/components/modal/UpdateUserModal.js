@@ -18,8 +18,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { formatDate } from "../../utils/DateHelper";
-import axios from "axios";
-import { ROOT_URL } from "../../constants";
+import axios from "./../../utils/AxiosInstance";
 import Swal from "sweetalert2";
 
 function UpdateUserModal({ children, user, fetching, setFetching }) {
@@ -33,20 +32,11 @@ function UpdateUserModal({ children, user, fetching, setFetching }) {
 		console.log(phoneNumber);
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const { data } = await axios.patch(
-				`${ROOT_URL}/api/users/updateUserProfile`,
-				{
-					userId: user._id,
-					name,
-					phoneNumber,
-				},
-				{
-					headers: {
-						Authorization: "Bearer " + jwt,
-					},
-				}
-			);
+			const { data } = await axios.patch(`/users/update-user-profile`, {
+				userId: user._id,
+				name,
+				phoneNumber,
+			});
 			setFetching(!fetching);
 			console.log(data);
 			onClose();

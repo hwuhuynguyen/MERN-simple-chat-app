@@ -5,8 +5,7 @@ import SideDrawer from "../components/shared/SideDrawer";
 import { Box, SimpleGrid, Spinner } from "@chakra-ui/react";
 import Sidebar from "../components/shared/Sidebar";
 import StatCard from "../components/card/StatCard";
-import axios from "axios";
-import { ROOT_URL } from "../constants";
+import axios from "./../utils/AxiosInstance";
 
 function DashboardPage() {
 	const navigate = useNavigate();
@@ -21,16 +20,8 @@ function DashboardPage() {
 	const [rateMessagePerUser, setRateMessagePerUser] = useState(0);
 
 	const getTotalUsers = async () => {
-		console.log("recreate user");
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(`${ROOT_URL}/api/users`, config);
+			const { data } = await axios.get(`/users`);
 
 			setTotalUsers(data.length);
 		} catch (error) {
@@ -39,16 +30,8 @@ function DashboardPage() {
 	};
 
 	const getTotalMessages = async () => {
-		console.log("recreate message");
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(`${ROOT_URL}/api/messages`, config);
+			const { data } = await axios.get(`/messages`);
 
 			setTotalMessages(data.length);
 		} catch (error) {
@@ -57,20 +40,8 @@ function DashboardPage() {
 	};
 
 	const getNewUsers = async () => {
-		console.log("recreate new user");
-
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(
-				`${ROOT_URL}/api/users/newRegisteredUsers`,
-				config
-			);
+			const { data } = await axios.get(`/users/new-registered-users`);
 
 			setNewUsers(data.length);
 		} catch (error) {
@@ -79,20 +50,8 @@ function DashboardPage() {
 	};
 
 	const getNewMessages = async () => {
-		console.log("recreate new message");
-
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(
-				`${ROOT_URL}/api/messages/newSentMessages`,
-				config
-			);
+			const { data } = await axios.get(`/messages/new-sent-messages`);
 
 			setNewMessages(data.length);
 		} catch (error) {

@@ -62,10 +62,6 @@ function MessageTable({ messages, itemOffset }) {
 											</Button>
 										</Tooltip>
 									</MessageDetailModal>
-
-									{/* <Button bg={"#e98c8ce3"}>
-										<DeleteIcon />
-									</Button> */}
 								</Box>
 							</Td>
 						</Tr>

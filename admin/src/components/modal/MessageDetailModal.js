@@ -17,8 +17,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { formatDate } from "../../utils/DateHelper";
-import axios from "axios";
-import { ROOT_URL } from "../../constants";
+import axios from "./../../utils/AxiosInstance";
 import { getSenderName } from "../../utils/ChatHelper";
 
 function MessageDetailModal({ children, message }) {
@@ -31,19 +30,8 @@ function MessageDetailModal({ children, message }) {
 	const handleViewMessageDetail = async () => {
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
+			const { data } = await axios.get(`/messages/detail/${message._id}`);
 
-			const { data } = await axios.get(
-				`${ROOT_URL}/api/messages/detail/${message._id}`,
-				config
-			);
-
-			console.log(data.message);
 			setDetails(data.message);
 			setViewMore(true);
 		} catch (error) {

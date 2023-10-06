@@ -3,8 +3,7 @@ import { AuthContext } from "../context/authContext";
 import SideDrawer from "../components/shared/SideDrawer";
 import { Box, Spinner } from "@chakra-ui/react";
 import Sidebar from "../components/shared/Sidebar";
-import axios from "axios";
-import { ROOT_URL } from "../constants";
+import axios from "./../utils/AxiosInstance";
 import UserTable from "../components/user/UserTable";
 import ReactPaginate from "react-paginate";
 
@@ -19,14 +18,7 @@ function UserPage() {
 	const getAllUsers = async () => {
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			const { data } = await axios.get(`${ROOT_URL}/api/users`, config);
+			const { data } = await axios.get(`/users`);
 
 			setUsers(data.users);
 		} catch (error) {

@@ -10,9 +10,8 @@ import {
 	Button,
 	Text,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "./../../utils/AxiosInstance";
 import React, { useState } from "react";
-import { ROOT_URL } from "../../constants";
 import Swal from "sweetalert2";
 
 function ResetPasswordModal({ children, user }) {
@@ -21,20 +20,9 @@ function ResetPasswordModal({ children, user }) {
 	const handleResetPassword = async () => {
 		setLoading(true);
 		try {
-			const jwt = localStorage.getItem("jwt");
-			const config = {
-				headers: {
-					Authorization: "Bearer " + jwt,
-				},
-			};
-
-			await axios.patch(
-				`${ROOT_URL}/api/auth/resetPassword`,
-				{
-					userId: user._id,
-				},
-				config
-			);
+			await axios.patch(`/auth/reset-password`, {
+				userId: user._id,
+			});
 
 			Swal.fire({
 				title: "Success!",
