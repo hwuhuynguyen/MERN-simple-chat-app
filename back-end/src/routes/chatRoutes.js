@@ -8,9 +8,7 @@ const {
 } = require("../controllers/chatController");
 
 const { isAuthenticated, isUser } = require("../middlewares/authMiddleware");
-const {
-	isAvailableToUpdateGroupChat,
-} = require("../middlewares/chatMiddleware");
+const { isGroupAdmin } = require("../middlewares/chatMiddleware");
 
 const router = express.Router();
 
@@ -27,11 +25,6 @@ router
 
 router
 	.route("/update-group-chat")
-	.patch(
-		isAuthenticated,
-		isUser,
-		isAvailableToUpdateGroupChat,
-		updateGroupChat
-	);
+	.patch(isAuthenticated, isUser, isGroupAdmin, updateGroupChat);
 
 module.exports = router;

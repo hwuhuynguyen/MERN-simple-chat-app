@@ -1,12 +1,16 @@
 const express = require("express");
 
-const { isAuthenticated, isAdmin } = require("../middlewares/authMiddleware");
+const {
+	isAuthenticated,
+	isAdmin,
+	isUser,
+} = require("../middlewares/authMiddleware");
 
 const {
 	sendMessage,
 	allMessages,
 	getAllMessagesForAdmin,
-	getAllNewSentMessagesForAdmin,
+	getAllNewSentMessagesToday,
 	getMessageById,
 } = require("../controllers/messageController");
 
@@ -15,7 +19,7 @@ const router = express.Router();
 router
 	.route("/")
 	.get(isAuthenticated, isAdmin, getAllMessagesForAdmin)
-	.post(isAuthenticated, sendMessage);
+	.post(isAuthenticated, isUser, sendMessage);
 
 router
 	.route("/detail/:messageId")
@@ -23,7 +27,7 @@ router
 
 router
 	.route("/new-sent-messages")
-	.get(isAuthenticated, isAdmin, getAllNewSentMessagesForAdmin);
+	.get(isAuthenticated, isAdmin, getAllNewSentMessagesToday);
 
 router.route("/:chatId").get(isAuthenticated, allMessages);
 

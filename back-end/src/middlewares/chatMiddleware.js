@@ -3,7 +3,7 @@ const Chat = require("../models/chatModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-const isAvailableToUpdateGroupChat = catchAsync(async (req, res, next) => {
+const isGroupAdmin = catchAsync(async (req, res, next) => {
 	let { chatId } = req.body;
 
 	if (!chatId) {
@@ -20,4 +20,4 @@ const isAvailableToUpdateGroupChat = catchAsync(async (req, res, next) => {
 	next();
 });
 
-module.exports = { isAvailableToUpdateGroupChat };
+module.exports = { isGroupAdmin };

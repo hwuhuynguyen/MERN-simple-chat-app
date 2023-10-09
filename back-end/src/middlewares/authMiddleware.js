@@ -6,7 +6,7 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-const protect = catchAsync(async (req, res, next) => {
+const isAuthenticated = catchAsync(async (req, res, next) => {
 	//1. get token and check if it exists
 	let token;
 	if (
@@ -61,7 +61,7 @@ const isAdmin = (req, res, next) => {
 	next();
 };
 
-const isNotAdmin = (req, res, next) => {
+const isUser = (req, res, next) => {
 	if (req.user.isAdmin) {
 		return next(
 			new AppError("You do not have permission to perform this action"),
@@ -71,4 +71,4 @@ const isNotAdmin = (req, res, next) => {
 	next();
 };
 
-module.exports = { protect, restrictTo, isAdmin, isNotAdmin };
+module.exports = { isAuthenticated, restrictTo, isAdmin, isUser };

@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
@@ -33,16 +34,6 @@ const userSchema = mongoose.Schema(
 				message: "Password are not the same",
 			},
 		},
-		// phoneNumber: {
-		// 	type: "String",
-		// 	validate: {
-		// 		validator: function (phone) {
-		// 			var regex = "/^$|^d{10}$/";
-		// 			return !phone || !phone.trim().length || regex.test(phone);
-		// 		},
-		// 		message: "Please provide a valid phone number.",
-		// 	},
-		// },
 		phoneNumber: {
 			type: "String",
 			validate: {
@@ -72,6 +63,8 @@ const userSchema = mongoose.Schema(
 			{ type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		],
 		passwordChangedAt: Date,
+		passwordResetToken: String,
+		passwordResetExpires: Date,
 	},
 	{ timestamps: true }
 );
@@ -101,6 +94,20 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 	// False means NOT changed
 	return false;
 };
+
+userSchema.methods.createPasswordResetToken = function () {
+	const resetToken = crypto.randomBytes(32).toString("hex");
+
+	this.passwordResetToken = crypto
+		.createHash("sha256")
+		.update(resetToken)
+		.digest("hex");
+
+	this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+	return resetToken;
+};
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

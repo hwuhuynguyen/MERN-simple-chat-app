@@ -27,7 +27,10 @@ connectDB();
 
 const app = express();
 
+// enable req.body json data
 app.use(express.json());
+
+// enable use static resources
 app.use(express.static(path.join(__dirname, "../")));
 
 app.use(cors());
@@ -56,8 +59,6 @@ app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/notifications", notificationRoutes);
-
-// app.listen(PORT, console.log(`Server is listening on ${PORT}`.yellow.bold));
 
 app.use(globalErrorHandler);
 
@@ -108,7 +109,7 @@ io.on("connection", (socket) => {
 		// --------------------------------
 		var chat = data.message.chat;
 
-		if (!chat.users) return console.log("chat.users not defined");
+		if (!chat.users) return;
 
 		chat.users.forEach((user) => {
 			if (user._id == data.message.sender._id) return;

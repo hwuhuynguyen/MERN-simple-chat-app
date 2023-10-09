@@ -1,7 +1,13 @@
 const fs = require("fs");
 
 const uploadFile = (data) => {
-	const filePath = `uploads/images/chat/${data.message.fileName}`;
+	// Create a directory to upload the file if it doesn't exist
+	const folderName = "uploads/images/chat";
+	if (!fs.existsSync(folderName)) {
+		fs.mkdirSync(folderName, { recursive: true });
+	}
+
+	const filePath = `${folderName}/${data.message.fileName}`;
 
 	const base64String = data.image;
 	const index = base64String.indexOf("base64");
@@ -17,8 +23,6 @@ const uploadFile = (data) => {
 
 	// Write the buffer to a file
 	fs.writeFileSync(`${filePath}.${extension}`, buffer);
-
-	console.log("File saved at:", filePath);
 };
 
 module.exports = uploadFile;

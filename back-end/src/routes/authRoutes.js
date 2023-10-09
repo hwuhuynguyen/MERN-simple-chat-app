@@ -5,7 +5,9 @@ const {
 	login,
 	logout,
 	updatePassword,
+	forgotPassword,
 	resetPassword,
+	resetToDefaultPassword,
 } = require("../controllers/authController");
 const {
 	isAuthenticated,
@@ -23,6 +25,11 @@ router.route("/logout").get(logout);
 
 router.route("/update-password").patch(isAuthenticated, isUser, updatePassword);
 
-router.route("/reset-password").patch(isAuthenticated, isAdmin, resetPassword);
+router.route("/forgot-password").patch(forgotPassword);
 
+router
+	.route("/reset-default-password")
+	.patch(isAuthenticated, isAdmin, resetToDefaultPassword);
+
+router.route("/reset-password/:token").patch(resetPassword);
 module.exports = router;
