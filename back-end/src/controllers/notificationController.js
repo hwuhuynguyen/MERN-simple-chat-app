@@ -1,4 +1,8 @@
-const Notification = require("../models/notificationModel");
+const {
+	readMyNotifications,
+	findUnreadNotifications,
+	addNotification,
+} = require("../services/notificationService");
 
 const catchAsync = require("../utils/catchAsync");
 
@@ -6,14 +10,8 @@ const catchAsync = require("../utils/catchAsync");
 //@route           POST /api/notifications/
 //@access          PROTECTED
 const createNewNotification = catchAsync(async (req, res) => {
-	const newNotification = await Notification.create({
-		sender: req.user._id,
-		receiver: req.body.receiver,
-		type: req.body.type,
-		content: req.body.content,
-		isRead: req.body.isRead,
-		chat: req.body.chat,
-	});
+	const newNotification = await addNotification(req.body, req.user._id);
+
 	res.status(201).json({
 		notification: newNotification,
 	});
@@ -23,12 +21,7 @@ const createNewNotification = catchAsync(async (req, res) => {
 //@route           GET /api/notifications/
 //@access          PROTECTED
 const getAllUnreadNotifications = catchAsync(async (req, res) => {
-	const notifications = await Notification.find({
-		receiver: req.user._id,
-		isRead: false,
-	})
-		.populate("sender")
-		.populate("chat");
+	const notifications = await findUnreadNotifications(req.user._id);
 
 	res.status(200).json({
 		notifications: notifications,
@@ -39,16 +32,11 @@ const getAllUnreadNotifications = catchAsync(async (req, res) => {
 //@route           PATCH /api/notifications/
 //@access          PROTECTED
 const readNotifications = catchAsync(async (req, res) => {
-	await Notification.updateMany(
-		{ receiver: req.user._id, isRead: false, chat: req.body.chatId },
-		{ $set: { isRead: true } }
+	const notifications = await readMyNotifications(
+		req.body.chatId,
+		req.user._id
 	);
-	const notifications = await Notification.find({
-		receiver: req.user._id,
-		isRead: false,
-	})
-		.populate("sender")
-		.populate("chat");
+
 	res.status(200).json({ notifications });
 });
 

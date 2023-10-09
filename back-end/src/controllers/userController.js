@@ -1,4 +1,16 @@
-const User = require("../models/userModel");
+const {
+	findAllUsers,
+	findAllFriends,
+	findUserDetail,
+	findNewUsersRegisted,
+	updateCurrentUser,
+	updateUser,
+	sendRequest,
+	cancelRequest,
+	acceptRequest,
+	denyRequest,
+	removeFriendship,
+} = require("../services/userService");
 
 const catchAsync = require("../utils/catchAsync");
 
@@ -6,54 +18,7 @@ const catchAsync = require("../utils/catchAsync");
 //@route           GET /api/users/
 //@access          PROTECTED
 const getAllUsers = catchAsync(async (req, res) => {
-	const keyword = req.query.search
-		? {
-				$or: [
-					{ name: { $regex: req.query.search, $options: "i" } },
-					{ email: { $regex: req.query.search, $options: "i" } },
-					{ phoneNumber: { $regex: req.query.search, $options: "i" } },
-				],
-		  }
-		: {};
-
-	const users = await User.find({ ...keyword, isAdmin: false });
-
-	res.status(200).json({
-		length: users.length,
-		users,
-	});
-});
-
-//@description     Get user information by ID
-//@route           GET /api/users/profile/:userId
-//@access          PROTECTED
-const getUserDetailById = catchAsync(async (req, res) => {
-	const userId = req.params.userId;
-
-	const user = await User.find({ _id: { $eq: userId } });
-
-	res.status(200).json({
-		user,
-	});
-});
-
-//@description     Get all new registed users of a system (except Admin)
-//@route           GET /api/users/newRegistedUsers
-//@access          PROTECTED
-const getAllNewUsersRegistedToday = catchAsync(async (req, res) => {
-	const today = new Date();
-	today.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0 for the current day.
-
-	const tomorrow = new Date(today);
-	tomorrow.setDate(today.getDate() + 1); // Get the start of the next day.
-
-	const users = await User.find({
-		isAdmin: false,
-		createdAt: {
-			$gte: today,
-			$lt: tomorrow,
-		},
-	});
+	const users = await findAllUsers(req.query.search);
 
 	res.status(200).json({
 		length: users.length,
@@ -65,13 +30,33 @@ const getAllNewUsersRegistedToday = catchAsync(async (req, res) => {
 //@route           GET /api/users/me
 //@access          PROTECTED
 const getCurrentUserDetail = catchAsync(async (req, res) => {
-	const user = await User.findById(req.user._id)
-		.populate("friends")
-		.populate("waitingAcceptedFriends")
-		.populate("waitingRequestFriends");
+	const user = await findUserDetail(req.user._id);
 
 	res.status(200).json({
 		user,
+	});
+});
+
+//@description     Get user information by ID
+//@route           GET /api/users/profile/:userId
+//@access          PROTECTED
+const getUserDetailById = catchAsync(async (req, res) => {
+	const user = await findUserDetail(req.params.userId);
+
+	res.status(200).json({
+		user,
+	});
+});
+
+//@description     Get all new registed users of a system (except Admin)
+//@route           GET /api/users/new-registed-users
+//@access          PROTECTED
+const getAllNewUsersRegistedToday = catchAsync(async (req, res) => {
+	const users = await findNewUsersRegisted();
+
+	res.status(200).json({
+		length: users.length,
+		users,
 	});
 });
 
@@ -79,32 +64,26 @@ const getCurrentUserDetail = catchAsync(async (req, res) => {
 //@route					PATCH /api/users/me
 //@access					PROTECTED
 const updateCurrentUserDetail = catchAsync(async (req, res) => {
-	const user = await User.findByIdAndUpdate(
-		req.user._id,
-		{
-			name: req.body.name || req.user.name,
-			email: req.body.email || req.user.email,
-			phoneNumber: req.body.phoneNumber || req.user.phoneNumber,
-		},
-		{ new: true }
-	);
+	const name = req.body.name || req.user.name;
+	const email = req.body.email || req.user.email;
+	const phoneNumber = req.body.phoneNumber || req.user.phoneNumber;
+	const user = await updateCurrentUser(req.user._id, name, email, phoneNumber);
+
 	res.status(200).json({
 		user,
 	});
 });
 
 //@description		Update user information (for admin only)
-//@route					PATCH /api/users/me
+//@route					PATCH /api/users/update-user-profile
 //@access					PROTECTED
 const updateUserDetail = catchAsync(async (req, res) => {
-	const user = await User.findByIdAndUpdate(
+	const user = await updateUser(
 		req.body.userId,
-		{
-			name: req.body.name,
-			phoneNumber: req.body.phoneNumber || "",
-		},
-		{ new: true }
+		req.body.name,
+		req.body.phoneNumber || ""
 	);
+
 	res.status(200).json({
 		user,
 	});
@@ -116,13 +95,7 @@ const updateUserDetail = catchAsync(async (req, res) => {
 const getAllFriends = catchAsync(async (req, res) => {
 	const user = await req.user.populate("friends");
 	const keyword = req.query.search?.toLowerCase() || "";
-	const friends = user.friends.filter((friend) => {
-		return (
-			friend.name?.toLowerCase().includes(keyword) ||
-			friend.email?.toLowerCase().includes(keyword) ||
-			friend.phoneNumber?.toLowerCase().includes(keyword)
-		);
-	});
+	const friends = await findAllFriends(user, keyword);
 
 	res.status(200).json({
 		length: friends.length,
@@ -134,16 +107,8 @@ const getAllFriends = catchAsync(async (req, res) => {
 //@route					PATCH /api/users/send-friend-request
 //@access					PROTECTED
 const sendFriendRequest = catchAsync(async (req, res) => {
-	const user = await User.findByIdAndUpdate(
-		req.user._id,
-		{
-			$push: { waitingAcceptedFriends: req.body.userId },
-		},
-		{ new: true }
-	);
-	await User.findByIdAndUpdate(req.body.userId, {
-		$push: { waitingRequestFriends: req.user._id },
-	});
+	const user = await sendRequest(req.user._id, req.body.userId);
+
 	res.status(200).json({
 		user,
 	});
@@ -153,16 +118,8 @@ const sendFriendRequest = catchAsync(async (req, res) => {
 //@route					PATCH /api/users/cancel-friend-request
 //@access					PROTECTED
 const cancelFriendRequest = catchAsync(async (req, res) => {
-	const user = await User.findByIdAndUpdate(
-		req.user._id,
-		{
-			$pull: { waitingAcceptedFriends: req.body.userId },
-		},
-		{ new: true }
-	);
-	await User.findByIdAndUpdate(req.body.userId, {
-		$pull: { waitingRequestFriends: req.user._id },
-	});
+	const user = await cancelRequest(req.user._id, req.body.userId);
+
 	res.status(200).json({
 		user,
 	});
@@ -172,22 +129,7 @@ const cancelFriendRequest = catchAsync(async (req, res) => {
 //@route					PATCH /api/users/accept-friend-request
 //@access					PROTECTED
 const acceptFriendRequest = catchAsync(async (req, res) => {
-	await User.findByIdAndUpdate(req.user._id, {
-		$push: { friends: req.body.userId },
-	});
-	await User.findByIdAndUpdate(req.body.userId, {
-		$push: { friends: req.user._id },
-	});
-	await User.findByIdAndUpdate(req.body.userId, {
-		$pull: { waitingAcceptedFriends: req.user._id },
-	});
-	const user = await User.findByIdAndUpdate(
-		req.user._id,
-		{
-			$pull: { waitingRequestFriends: req.body.userId },
-		},
-		{ new: true }
-	);
+	const user = await acceptRequest(req.user._id, req.body.userId);
 
 	res.status(200).json({
 		user,
@@ -199,16 +141,8 @@ const acceptFriendRequest = catchAsync(async (req, res) => {
 //@route					PATCH /api/users/deny-friend-request
 //@access					PROTECTED
 const denyFriendRequest = catchAsync(async (req, res) => {
-	const user = await User.findByIdAndUpdate(
-		req.user._id,
-		{
-			$pull: { waitingRequestFriends: req.body.userId },
-		},
-		{ new: true }
-	);
-	await User.findByIdAndUpdate(req.body.userId, {
-		$pull: { waitingAcceptedFriends: req.user._id },
-	});
+	const user = await denyRequest(req.user._id, req.body.userId);
+
 	res.status(200).json({
 		user,
 		message: "Friend request deleted",
@@ -219,12 +153,8 @@ const denyFriendRequest = catchAsync(async (req, res) => {
 //@route					PATCH /api/users/remove-friend
 //@access					PROTECTED
 const removeFriend = catchAsync(async (req, res) => {
-	await User.findByIdAndUpdate(req.user._id, {
-		$pull: { friends: req.params.id },
-	});
-	const user = await User.findByIdAndUpdate(req.params.id, {
-		$pull: { friends: req.user._id },
-	});
+	const user = await removeFriendship(req.user._id, req.body.userId);
+
 	res.status(200).json({
 		user,
 		message: "Removed friend successfully",
