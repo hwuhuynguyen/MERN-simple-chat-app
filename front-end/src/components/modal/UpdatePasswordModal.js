@@ -30,7 +30,7 @@ function UpdatePasswordModal({ children }) {
 	const handleUpdateProfile = async (event) => {
 		setLoading(true);
 		try {
-			const { data } = await axios.patch(`/auth/updatePassword`, {
+			const { data } = await axios.patch(`/auth/update-password`, {
 				passwordCurrent,
 				password,
 				passwordConfirm,

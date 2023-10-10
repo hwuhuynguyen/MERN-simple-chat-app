@@ -45,6 +45,10 @@ function Login() {
 		}));
 	};
 
+	const forgotPassword = () => {
+		navigate("/forgot-password");
+	};
+
 	const getSampleAccount = () => {
 		setFormData({
 			email: SAMPLE_EMAIL,
@@ -159,7 +163,10 @@ function Login() {
 			>
 				Login
 			</Button>
-			<Button colorScheme="red" width={"100%"} onClick={getSampleAccount}>
+			<Button colorScheme="red" width={"100%"} onClick={forgotPassword}>
+				Forgot Password?
+			</Button>
+			<Button colorScheme="green" width={"100%"} onClick={getSampleAccount}>
 				Get Sample Account
 			</Button>
 		</VStack>

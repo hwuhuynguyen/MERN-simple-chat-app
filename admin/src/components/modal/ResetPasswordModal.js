@@ -20,7 +20,7 @@ function ResetPasswordModal({ children, user }) {
 	const handleResetPassword = async () => {
 		setLoading(true);
 		try {
-			await axios.patch(`/auth/reset-password`, {
+			await axios.patch(`/auth/reset-default-password`, {
 				userId: user._id,
 			});
 

@@ -89,7 +89,7 @@ function NewChatModal({ children, fetchAgain, setFetchAgain }) {
 		setLoading(true);
 		try {
 			if (selectedFriends.length > 1) {
-				const { data } = await axios.post(`/chats/createGroupChat`, {
+				const { data } = await axios.post(`/chats/create-group-chat`, {
 					chatName,
 					isGroupChat: true,
 					users: selectedFriends,

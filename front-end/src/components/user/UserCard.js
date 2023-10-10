@@ -44,7 +44,7 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 
 	const handleCancelFriendRequest = async (userId) => {
 		try {
-			const { data } = await axios.patch(`/users/cancelFriendRequest`, {
+			const { data } = await axios.patch(`/users/cancel-friend-request`, {
 				userId,
 			});
 
@@ -81,7 +81,7 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 
 	const handleAcceptFriendRequest = async (userId) => {
 		try {
-			const { data } = await axios.patch(`/users/acceptFriendRequest`, {
+			const { data } = await axios.patch(`/users/accept-friend-request`, {
 				userId,
 			});
 
@@ -107,7 +107,7 @@ function UserCard({ user, isRequestSent, isRequestReceived }) {
 
 	const handleDenyFriendRequest = async (userId) => {
 		try {
-			const { data } = await axios.patch(`/users/denyFriendRequest`, {
+			const { data } = await axios.patch(`/users/deny-friend-request`, {
 				userId,
 			});
 

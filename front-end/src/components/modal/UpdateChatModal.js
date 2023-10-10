@@ -196,7 +196,7 @@ function UpdateChatModal({
 		console.log(selectedRemovedFriends);
 		setLoading(true);
 		try {
-			await axios.patch(`/chats/updateGroupChat`, {
+			await axios.patch(`/chats/update-group-chat`, {
 				chatId: selectedChat._id,
 				chatName,
 				addedMembers: selectedAddedFriends,
