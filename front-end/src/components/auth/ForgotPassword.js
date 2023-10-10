@@ -13,7 +13,6 @@ import { AuthContext } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { ROOT_URL } from "../../constants";
 
 function ForgotPassword() {
 	// Step 1: Create Refs
@@ -67,9 +66,12 @@ function ForgotPassword() {
 		}
 		setLoading(true);
 		try {
-			await axios.patch(`${ROOT_URL}/api/auth/forgot-password`, {
-				email,
-			});
+			await axios.patch(
+				`${process.env.REACT_APP_ROOT_URL}/api/auth/forgot-password`,
+				{
+					email,
+				}
+			);
 
 			Swal.fire({
 				title: "Success!",

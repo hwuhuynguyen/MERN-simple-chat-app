@@ -19,7 +19,6 @@ import {
 	NEW_MESSAGE,
 	RECEIVE_IMAGE,
 	RECEIVE_MESSAGE,
-	ROOT_URL,
 	SEND_IMAGE,
 } from "../../constants";
 import ScrollableChat from "./ScrollableChat";
@@ -42,7 +41,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 	const [file, setFile] = useState();
 
 	useEffect(() => {
-		socket = io(ROOT_URL);
+		socket = io(process.env.REACT_APP_ROOT_URL);
 		socket.emit("setup", user);
 		console.log("Setup socket");
 		console.log(selectedChatCompare);

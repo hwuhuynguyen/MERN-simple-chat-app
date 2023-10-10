@@ -1,4 +1,3 @@
-export const ROOT_URL = "http://localhost:5000";
 export const SAMPLE_EMAIL = "guest@gmail.com";
 export const SAMPLE_PASSWORD = "123456";
 

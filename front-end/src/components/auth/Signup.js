@@ -10,7 +10,6 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import React, { useState } from "react";
 import axios from "axios";
-import { ROOT_URL } from "../../constants";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
@@ -43,7 +42,7 @@ function Signup({ onSignupSuccess }) {
 		event.preventDefault();
 		setLoading(true);
 		try {
-			await axios.post(`${ROOT_URL}/api/auth/register`, {
+			await axios.post(`${process.env.REACT_APP_ROOT_URL}/api/auth/register`, {
 				name: formData.name,
 				email: formData.email,
 				password: formData.password,

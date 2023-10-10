@@ -1,7 +1,7 @@
 import { createContext, useReducer } from "react";
 import { authReducer } from "./authReducer";
 import axios from "axios";
-import { LOGIN_FAILURE, LOGIN_SUCCESS, LOGOUT, ROOT_URL } from "../constants";
+import { LOGIN_FAILURE, LOGIN_SUCCESS, LOGOUT } from "../constants";
 
 const INITIAL_STATE = {
 	user: JSON.parse(localStorage.getItem("user")) || null,
@@ -17,10 +17,13 @@ export const AuthContextProvider = (props) => {
 
 	const loginHandler = async (email, password) => {
 		try {
-			const res = await axios.post(`${ROOT_URL}/api/auth/login`, {
-				email: email,
-				password: password,
-			});
+			const res = await axios.post(
+				`${process.env.REACT_APP_ROOT_URL}/api/auth/login`,
+				{
+					email: email,
+					password: password,
+				}
+			);
 
 			dispatch({ type: LOGIN_SUCCESS, payload: res.data.data.user });
 
@@ -34,7 +37,7 @@ export const AuthContextProvider = (props) => {
 
 	const logoutHandler = async () => {
 		try {
-			await axios.get(`${ROOT_URL}/api/auth/logout`);
+			await axios.get(`${process.env.REACT_APP_ROOT_URL}/api/auth/logout`);
 
 			dispatch({ type: LOGOUT });
 			localStorage.removeItem("jwt");

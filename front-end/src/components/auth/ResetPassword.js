@@ -15,7 +15,6 @@ import { AuthContext } from "../../context/authContext";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { ROOT_URL } from "../../constants";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 function ResetPassword() {
@@ -58,10 +57,13 @@ function ResetPassword() {
 
 		setLoading(true);
 		try {
-			await axios.patch(`${ROOT_URL}/api/auth/reset-password/${token}`, {
-				password: formData.password,
-				passwordConfirm: formData.passwordConfirm,
-			});
+			await axios.patch(
+				`${process.env.REACT_APP_ROOT_URL}/api/auth/reset-password/${token}`,
+				{
+					password: formData.password,
+					passwordConfirm: formData.passwordConfirm,
+				}
+			);
 
 			Swal.fire({
 				title: "Success!",

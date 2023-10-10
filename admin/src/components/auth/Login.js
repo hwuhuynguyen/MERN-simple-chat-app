@@ -14,7 +14,6 @@ import Swal from "sweetalert2";
 import {
 	LOGIN_FAILURE,
 	LOGIN_SUCCESS,
-	ROOT_URL,
 	SAMPLE_EMAIL,
 	SAMPLE_PASSWORD,
 } from "../../constants";
@@ -66,10 +65,13 @@ function Login() {
 		}
 		setLoading(true);
 		try {
-			const res = await axios.post(`${ROOT_URL}/api/auth/login`, {
-				email: formData.email,
-				password: formData.password,
-			});
+			const res = await axios.post(
+				`${process.env.REACT_APP_ROOT_URL}/api/auth/login`,
+				{
+					email: formData.email,
+					password: formData.password,
+				}
+			);
 
 			if (!res.data.data.user.isAdmin) {
 				setLoading(false);

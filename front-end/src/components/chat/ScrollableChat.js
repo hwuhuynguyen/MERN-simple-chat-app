@@ -8,7 +8,6 @@ import {
 	setMarginLeftForMessageSent,
 	setMarginTopForMessageSentAndAvatar,
 } from "../../utils/ChatHelper";
-import { ROOT_URL } from "../../constants";
 
 function ScrollableChat({ messages }) {
 	const authCtx = useContext(AuthContext);
@@ -68,7 +67,7 @@ function ScrollableChat({ messages }) {
 									}}
 								>
 									<img
-										src={ROOT_URL + m.content}
+										src={process.env.REACT_APP_ROOT_URL + m.content}
 										alt=""
 										width={"300px"}
 										height={"auto"}
