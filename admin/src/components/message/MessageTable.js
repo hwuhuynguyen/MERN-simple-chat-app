@@ -27,7 +27,11 @@ function MessageTable({ messages, itemOffset }) {
 	};
 
 	return (
-		<TableContainer w={"100%"} overflowY={"auto"}>
+		<TableContainer
+			w={"100%"}
+			overflowY={"auto"}
+			height={"-webkit-fill-available"}
+		>
 			<Table variant="simple">
 				<Thead>
 					<Tr>

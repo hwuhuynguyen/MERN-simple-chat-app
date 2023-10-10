@@ -33,7 +33,7 @@ export default function NavItem({ icon, title, active, navSize, link }) {
 							<Text
 								mb={0}
 								ml={5}
-								display={"flex"}
+								display={{ base: "none", xl: "flex" }}
 								color={active && "#FFF"}
 								alignItems={"center"}
 							>

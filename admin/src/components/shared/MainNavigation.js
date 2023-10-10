@@ -28,7 +28,11 @@ function MainNavigation({ user, onLogoutHandler }) {
 			border={"5px solid white"}
 			borderRadius={"10px"}
 		>
-			<Text fontSize={"4xl"} textAlign={"center"} m={"auto"}>
+			<Text
+				fontSize={{ base: "xl", md: "3xl" }}
+				textAlign={"center"}
+				m={"auto"}
+			>
 				SIMPLE CHAT DASHBOARD
 			</Text>
 			<div className="d-flex align-items-center" style={{ display: "flex" }}>

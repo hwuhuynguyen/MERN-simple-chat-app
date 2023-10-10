@@ -16,7 +16,11 @@ import UpdateUserModal from "../modal/UpdateUserModal";
 import ResetPasswordModal from "../modal/ResetPasswordModal";
 function UserTable({ users, itemOffset, fetching, setFetching }) {
 	return (
-		<TableContainer w={"100%"} overflowY={"auto"}>
+		<TableContainer
+			w={"100%"}
+			overflowY={"auto"}
+			height={"-webkit-fill-available"}
+		>
 			<Table variant="simple">
 				<Thead>
 					<Tr>

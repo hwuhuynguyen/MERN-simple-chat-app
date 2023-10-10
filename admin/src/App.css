@@ -2,6 +2,7 @@
 
 .App {
 	min-height: 100vh;
+	height: auto;
 	display: flex;
 	background-image: url("./assets/image/background.png");
 	background-repeat: no-repeat;

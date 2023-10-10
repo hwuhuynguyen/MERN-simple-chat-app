@@ -57,9 +57,10 @@ function UserPage() {
 				display="flex"
 				justifyContent="space-between"
 				w="98vw"
-				h="88vh"
+				minH="88vh"
 				m="1vh 1vw"
 				flexDirection={"row"}
+				gap={"10px"}
 			>
 				<Sidebar column={"Users"} />
 				<Box
@@ -68,9 +69,10 @@ function UserPage() {
 					flexDir="column"
 					p={3}
 					bg="white"
-					w={{ base: "100%", md: "84%" }}
+					w={{ base: "inherit", xl: "84%" }}
 					borderRadius="lg"
 					borderWidth="1px"
+					overflowX={"auto"}
 				>
 					{loading ? (
 						<Spinner size="xl" w={20} h={20} alignSelf="center" margin="auto" />
@@ -82,7 +84,7 @@ function UserPage() {
 								fetching={fetching}
 								setFetching={setFetching}
 							/>
-							<Box style={{ position: "absolute", bottom: "10px" }}>
+							<Box>
 								<ReactPaginate
 									breakLabel="..."
 									nextLabel="Next"
@@ -100,7 +102,7 @@ function UserPage() {
 									nextLinkClassName="page-link"
 									breakClassName="page-item"
 									breakLinkClassName="page-link"
-									containerClassName="pagination"
+									containerClassName="pagination justify-content-center flex-wrap"
 									activeClassName="active"
 								/>
 							</Box>

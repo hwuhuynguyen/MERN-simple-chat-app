@@ -12,7 +12,7 @@ export default function Sidebar({ column }) {
 			alignItems="center"
 			p={3}
 			bg="white"
-			w={{ base: "100%", md: "15%" }}
+			w={{ xl: "15%" }}
 			borderRadius="lg"
 			borderWidth="1px"
 		>

@@ -93,9 +93,10 @@ function DashboardPage() {
 				display="flex"
 				justifyContent="space-between"
 				w="98vw"
-				h="88vh"
+				minH="88vh"
 				m="1vh 1vw"
 				flexDirection={"row"}
+				gap={"10px"}
 			>
 				<Sidebar column={"Dashboard"} />
 				<Box
@@ -104,14 +105,25 @@ function DashboardPage() {
 					flexDir="column"
 					p={3}
 					bg="white"
-					w={{ base: "100%", md: "84%" }}
+					w={{ base: "inherit", xl: "84%" }}
 					borderRadius="lg"
 					borderWidth="1px"
+					overflowX={"auto"}
 				>
 					{loading ? (
 						<Spinner size="xl" w={20} h={20} alignSelf="center" margin="auto" />
 					) : (
-						<SimpleGrid w={"100%"} spacing={4} templateColumns="repeat(5, 1fr)">
+						<SimpleGrid
+							w={"100%"}
+							spacing={4}
+							templateColumns={{
+								base: "repeat(1, 1fr)",
+								sm: "repeat(2, 1fr)",
+								md: "repeat(3, 1fr)",
+								lg: "repeat(4, 1fr)",
+								xl: "repeat(5, 1fr)",
+							}}
+						>
 							<StatCard
 								backgroundColor={"#ab5f5f"}
 								textColor={"white"}

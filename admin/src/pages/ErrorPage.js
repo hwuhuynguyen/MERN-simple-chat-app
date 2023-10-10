@@ -24,7 +24,7 @@ function ErrorPage() {
 				bg="white"
 				w={"98vw"}
 				m={"1vh 1vw"}
-				h={"88vh"}
+				minH={"88vh"}
 				borderRadius="lg"
 				borderWidth="1px"
 			>
